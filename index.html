@@ -148,20 +148,28 @@ th.sticky-col { z-index: 30; box-shadow: 4px 0 10px -2px rgba(0,0,0,0.3); }
 </div>
 
 <header class="text-white shadow-lg sticky top-0 z-50 transition-all duration-300" id="main-header" style="background:var(--preto)">
-  <div class="container mx-auto px-4 py-4 flex justify-between items-center h-24">
-    <nav style="display:flex;gap:24px;font-weight:700;font-size:11px;letter-spacing:.1em;color:#d1d5db;" class="no-print">
-      <a href="#intro" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">INÍCIO</a>
-      <a href="#dica" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">DICA DA PROFª</a>
-      <a href="#medidas" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">MEDIDAS</a>
-      <a href="#tabela" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">TABELA</a>
-      <a href="#fotos-ev" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">FOTOS</a>
-    </nav>
-    <button id="mobile-menu-btn" class="lg:hidden z-50 p-2 text-white focus:outline-none hover:bg-white/10 rounded-full transition" aria-label="Abrir Menu">
+  <div class="container mx-auto px-4 py-4 flex justify-between items-center h-20 md:h-24 relative">
+    
+    <button id="mobile-menu-btn" class="lg:hidden z-50 p-2 -ml-2 text-white focus:outline-none hover:bg-white/10 rounded-full transition" aria-label="Abrir Menu">
       <i data-lucide="menu" class="w-8 h-8"></i>
     </button>
-    <button onclick="window.print()" class="text-white px-5 py-2 rounded-full font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg no-print" style="background:var(--verde)" aria-label="Imprimir">
-      <i data-lucide="printer" class="w-5 h-5"></i> <span>IMPRIMIR</span>
+
+    <div class="lg:hidden text-2xl font-black italic tracking-widest absolute left-1/2 transform -translate-x-1/2 z-0" style="font-family:'Playfair Display',serif; color:var(--creme)">
+      JN
+    </div>
+
+    <nav class="hidden lg:flex gap-6 font-bold text-[11px] tracking-widest text-gray-300 no-print z-10 items-center">
+      <a href="#intro" class="hover:text-white transition">INÍCIO</a>
+      <a href="#dica" class="hover:text-white transition">DICA DA PROFª</a>
+      <a href="#medidas" class="hover:text-white transition">MEDIDAS</a>
+      <a href="#tabela" class="hover:text-white transition">TABELA</a>
+      <a href="#fotos-ev" class="hover:text-white transition">FOTOS</a>
+    </nav>
+
+    <button onclick="window.print()" class="text-white w-12 h-12 lg:w-auto lg:h-auto lg:px-5 lg:py-2 rounded-full font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg no-print z-10 hover:scale-105" style="background:var(--verde)" aria-label="Imprimir">
+      <i data-lucide="printer" class="w-5 h-5"></i> <span class="hidden lg:inline">IMPRIMIR</span>
     </button>
+
   </div>
 </header>
 
@@ -579,7 +587,7 @@ function renderW(){
     h+=`<div class="w-full max-w-sm"><label class="block text-center font-bold text-gray-400 text-sm mb-3 uppercase tracking-wider">${s.label}</label><input type="text" inputmode="decimal" id="wiz-input-single" class="wizard-input" placeholder="0.0" value="${sv}"></div>`;
   }else{
     const sL=localStorage.getItem(`${s.id}-l-m${wM}`)||'',sR=localStorage.getItem(`${s.id}-r-m${wM}`)||'';
-    h+=`<div class="w-full max-w-md grid grid-cols-2 gap-4 md:gap-6"><div><label class="block text-center font-bold text-gray-400 text-xs md:text-sm mb-3 uppercase tracking-wider">Lado Esquerdo</label><input type="text" inputmode="decimal" id="wiz-input-l" class="wizard-input" placeholder="Esq" value="${sL}"></div><div><label class="block text-center font-bold text-gray-400 text-xs md:text-sm mb-3 uppercase tracking-wider">Lado Direito</label><input type="text" inputmode="decimal" id="wiz-input-r" class="wizard-input" placeholder="Dir" value="${sR}"></div></div></div>`;
+    h+=`<div class="w-full max-w-md grid grid-cols-2 gap-4 md:gap-6"><div><label class="block text-center font-bold text-gray-400 text-xs md:text-sm mb-3 uppercase tracking-wider">Lado Esquerdo</label><input type="text" inputmode="decimal" id="wiz-input-l" class="wizard-input" placeholder="Esq" value="${sL}"></div><div><label class="block text-center font-bold text-gray-400 text-xs md:text-sm mb-3 uppercase tracking-wider">Lado Direito</label><input type="text" inputmode="decimal" id="wiz-input-r" class="wizard-input" placeholder="Dir" value="${sR}"></div></div>`;
   }
   c.innerHTML=h;
   initLucide();
@@ -731,3 +739,4 @@ function showToast(msg){const t=document.getElementById('toast');t.innerText=msg
 </script>
 </body>
 </html>
+}
