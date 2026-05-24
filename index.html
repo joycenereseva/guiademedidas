@@ -26,6 +26,22 @@ body { font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiase
 
 #mobile-menu { transition: transform 0.3s ease-in-out; }
 
+/* CSS do Cabeçalho - Forçando layout mobile idêntico ao Diego */
+.menu-btn-mobile { display: block; background: transparent; border: none; color: white; padding: 8px; margin-left: -8px; cursor: pointer; z-index: 50; }
+.logo-mobile { position: absolute; left: 50%; transform: translateX(-50%); font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; font-style: italic; color: var(--creme); letter-spacing: 0.1em; z-index: 0; }
+.nav-desktop { display: none; }
+.btn-print { width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: var(--verde); color: white; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10; transition: transform 0.2s; }
+.btn-print span { display: none; }
+
+@media (min-width: 1024px) {
+  .menu-btn-mobile, .logo-mobile { display: none; }
+  .nav-desktop { display: flex; gap: 24px; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: #d1d5db; align-items: center; z-index: 10; }
+  .nav-desktop a { color: inherit; text-decoration: none; transition: color 0.2s; }
+  .nav-desktop a:hover { color: white; }
+  .btn-print { width: auto; height: auto; padding: 8px 20px; font-size: 12px; font-weight: bold; gap: 8px; border-radius: 9999px; }
+  .btn-print span { display: inline; }
+}
+
 .table-container { position: relative; background-color: white; scrollbar-width: thin; scrollbar-color: #8aba9e #f8fafc; }
 .table-container::-webkit-scrollbar { height: 12px; }
 .table-container::-webkit-scrollbar-track { background: #f8fafc; border-radius: 0 0 8px 8px; }
@@ -148,26 +164,24 @@ th.sticky-col { z-index: 30; box-shadow: 4px 0 10px -2px rgba(0,0,0,0.3); }
 </div>
 
 <header class="text-white shadow-lg sticky top-0 z-50 transition-all duration-300" id="main-header" style="background:var(--preto)">
-  <div class="container mx-auto px-4 py-4 flex justify-between items-center h-20 md:h-24 relative">
+  <div class="container mx-auto px-4 flex justify-between items-center h-20 md:h-24 relative">
     
-    <button id="mobile-menu-btn" class="lg:hidden z-50 p-2 -ml-2 text-white focus:outline-none hover:bg-white/10 rounded-full transition" aria-label="Abrir Menu">
+    <button id="mobile-menu-btn" class="menu-btn-mobile focus:outline-none hover:bg-white/10 rounded-full transition" aria-label="Abrir Menu">
       <i data-lucide="menu" class="w-8 h-8"></i>
     </button>
 
-    <div class="lg:hidden text-2xl font-black italic tracking-widest absolute left-1/2 transform -translate-x-1/2 z-0" style="font-family:'Playfair Display',serif; color:var(--creme)">
-      JN
-    </div>
+    <div class="logo-mobile">JN</div>
 
-    <nav class="hidden lg:flex gap-6 font-bold text-[11px] tracking-widest text-gray-300 no-print z-10 items-center">
-      <a href="#intro" class="hover:text-white transition">INÍCIO</a>
-      <a href="#dica" class="hover:text-white transition">DICA DA PROFª</a>
-      <a href="#medidas" class="hover:text-white transition">MEDIDAS</a>
-      <a href="#tabela" class="hover:text-white transition">TABELA</a>
-      <a href="#fotos-ev" class="hover:text-white transition">FOTOS</a>
+    <nav class="nav-desktop no-print">
+      <a href="#intro">INÍCIO</a>
+      <a href="#dica">DICA DA PROFª</a>
+      <a href="#medidas">MEDIDAS</a>
+      <a href="#tabela">TABELA</a>
+      <a href="#fotos-ev">FOTOS</a>
     </nav>
 
-    <button onclick="window.print()" class="text-white w-12 h-12 lg:w-auto lg:h-auto lg:px-5 lg:py-2 rounded-full font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg no-print z-10 hover:scale-105" style="background:var(--verde)" aria-label="Imprimir">
-      <i data-lucide="printer" class="w-5 h-5"></i> <span class="hidden lg:inline">IMPRIMIR</span>
+    <button onclick="window.print()" class="btn-print no-print hover:scale-105" aria-label="Imprimir">
+      <i data-lucide="printer" class="w-5 h-5"></i> <span>IMPRIMIR</span>
     </button>
 
   </div>
@@ -502,7 +516,7 @@ th.sticky-col { z-index: 30; box-shadow: 4px 0 10px -2px rgba(0,0,0,0.3); }
 </footer>
 
 <script>
-// Init Lucide com retry
+// Init Lucide
 function initLucide(){if(typeof lucide!=='undefined'){lucide.createIcons();}else{setTimeout(initLucide,100);}}
 initLucide();
 
@@ -739,4 +753,3 @@ function showToast(msg){const t=document.getElementById('toast');t.innerText=msg
 </script>
 </body>
 </html>
-}
