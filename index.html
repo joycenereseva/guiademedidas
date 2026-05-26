@@ -8,365 +8,513 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
-
-:root {
-  --verde: #4A7C62;
-  --verde-dark: #2d4f3e;
-  --verde-light: #8aba9e;
-  --creme: #F0EDE6;
-  --cinza: #7A7A7A;
-  --preto: #1A1A1A;
-  --bg: #F7F5F0;
-}
-
-body { font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
-
-.section-title { position: relative; display: inline-block; }
-.section-title::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 50%; height: 4px; background-color: var(--verde); }
-
-#mobile-menu { transition: transform 0.3s ease-in-out; }
-
-/* CSS do Cabeçalho - Forçando layout mobile idêntico ao Diego */
-.menu-btn-mobile { display: block; background: transparent; border: none; color: white; padding: 8px; margin-left: -8px; cursor: pointer; z-index: 50; }
-.logo-mobile { position: absolute; left: 50%; transform: translateX(-50%); font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; font-style: italic; color: var(--creme); letter-spacing: 0.1em; z-index: 0; }
-.nav-desktop { display: none; }
-.btn-print { width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: var(--verde); color: white; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10; transition: transform 0.2s; }
-.btn-print span { display: none; }
-
-@media (min-width: 1024px) {
-  .menu-btn-mobile, .logo-mobile { display: none; }
-  .nav-desktop { display: flex; gap: 24px; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; color: #d1d5db; align-items: center; z-index: 10; }
-  .nav-desktop a { color: inherit; text-decoration: none; transition: color 0.2s; }
-  .nav-desktop a:hover { color: white; }
-  .btn-print { width: auto; height: auto; padding: 8px 20px; font-size: 12px; font-weight: bold; gap: 8px; border-radius: 9999px; }
-  .btn-print span { display: inline; }
-}
-
-.table-container { position: relative; background-color: white; scrollbar-width: thin; scrollbar-color: #8aba9e #f8fafc; }
-.table-container::-webkit-scrollbar { height: 12px; }
-.table-container::-webkit-scrollbar-track { background: #f8fafc; border-radius: 0 0 8px 8px; }
-.table-container::-webkit-scrollbar-thumb { background-color: #8aba9e; border-radius: 8px; border: 3px solid #f8fafc; }
-.table-container::-webkit-scrollbar-thumb:hover { background-color: #4A7C62; }
-
-.measure-input { width: 100%; background: transparent; text-align: center; font-weight: 600; color: #374151; outline: none; padding: 6px 4px; font-size: 0.8rem; border: none; }
-.measure-input:focus { background-color: #e8f5ee; border-radius: 4px; outline: none; box-shadow: none; }
-.measure-input::placeholder { color: #D1D5DB; font-weight: 500; }
-
-.sticky-col { position: sticky; left: 0; z-index: 20; box-shadow: 4px 0 10px -2px rgba(0,0,0,0.1); }
-th.sticky-col { z-index: 30; box-shadow: 4px 0 10px -2px rgba(0,0,0,0.3); }
-
-#toast { visibility: hidden; min-width: 250px; margin-left: -125px; background-color: var(--preto); color: var(--creme); text-align: center; border-radius: 50px; padding: 16px; position: fixed; z-index: 100; left: 50%; bottom: 30px; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-#toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-@keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-@keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
-
-.modal-enter { animation: fadeInScale 0.2s ease-out forwards; }
-@keyframes fadeInScale { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-.wizard-enter { animation: slideIn 0.3s ease-out forwards; }
-@keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-.wizard-input { font-size: 2rem; text-align: center; font-weight: 900; color: var(--verde); background-color: #f9fafb; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; width: 100%; transition: all 0.3s; }
-.wizard-input:focus { outline: none; border-color: var(--verde); background-color: #e8f5ee; box-shadow: 0 0 0 4px rgba(74,124,98,0.1); }
-.wizard-input::placeholder { color: #d1d5db; font-weight: 400; }
-
-.date-input { font-size: 1.1rem; text-align: center; font-weight: 700; color: var(--preto); background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 1rem; padding: .85rem 1rem; width: 100%; transition: all .25s; }
-.date-input:focus { outline: none; border-color: var(--verde); background: #e8f5ee; box-shadow: 0 0 0 4px rgba(74,124,98,.12); }
-
-.month-date-label { font-size: 10px; color: var(--verde-light); font-weight: 700; text-align: center; margin-top: 2px; min-height: 14px; }
-
-@media print {
-  @page { size: landscape; margin: 10mm; }
-  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; text-shadow: none !important; box-shadow: none !important; }
-  body { background-color: white !important; color: black !important; margin: 0; padding: 0; }
-  .no-print, #mobile-menu-btn, #mobile-menu, header nav, #clear-data-btn, .animate-bounce, .copy-btn, .scroll-hint-box, #wizard-modal, #photo-wizard-modal, #confirm-modal { display: none !important; }
-  header { position: static !important; height: auto !important; padding: 15px 0 !important; background-color: var(--preto) !important; color: white !important; border-bottom: 2px solid var(--verde) !important; }
-  .table-container { border: 1px solid #e5e7eb !important; overflow: visible !important; }
-  #main-table { min-width: 100% !important; width: 100% !important; table-layout: fixed !important; }
-  #main-table th, #main-table td { padding: 4px 2px !important; font-size: 8px !important; border: 1px solid #e5e7eb !important; word-wrap: break-word; }
-  #main-table th.sticky-col, #main-table td.sticky-col { position: static !important; width: 70px !important; min-width: 70px !important; box-shadow: none !important; background-color: #f3f4f6 !important; }
-  .measure-input { font-size: 8px !important; padding: 1px !important; border: none !important; color: black !important; }
-  .grid > div, section, tr, li { page-break-inside: avoid !important; break-inside: avoid !important; }
-  #photo-months-grid { display: grid !important; grid-template-columns: repeat(3,1fr) !important; gap: 8px !important; }
+:root{--verde:#4A7C62;--verde-dark:#2d4f3e;--verde-light:#8aba9e;--creme:#F0EDE6;--cinza:#7A7A7A;--preto:#1A1A1A;--bg:#F7F5F0;}
+body{font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+.section-title{position:relative;display:inline-block;}
+.section-title::after{content:'';position:absolute;bottom:-5px;left:0;width:50%;height:4px;background-color:var(--verde);}
+#mobile-menu{transition:transform 0.3s ease-in-out;}
+.table-container{position:relative;background-color:white;scrollbar-width:thin;scrollbar-color:#8aba9e #f8fafc;}
+.table-container::-webkit-scrollbar{height:12px;}
+.table-container::-webkit-scrollbar-track{background:#f8fafc;border-radius:0 0 8px 8px;}
+.table-container::-webkit-scrollbar-thumb{background-color:#8aba9e;border-radius:8px;border:3px solid #f8fafc;}
+.table-container::-webkit-scrollbar-thumb:hover{background-color:#4A7C62;}
+.measure-input{width:100%;background:transparent;text-align:center;font-weight:600;color:#374151;outline:none;padding:6px 4px;font-size:0.8rem;border:none;}
+.measure-input:focus{background-color:#e8f5ee;border-radius:4px;outline:none;box-shadow:none;}
+.measure-input::placeholder{color:#D1D5DB;font-weight:500;}
+.sticky-col{position:sticky;left:0;z-index:20;box-shadow:4px 0 10px -2px rgba(0,0,0,0.1);}
+th.sticky-col{z-index:30;box-shadow:4px 0 10px -2px rgba(0,0,0,0.3);}
+#toast{visibility:hidden;min-width:250px;margin-left:-125px;background-color:var(--preto);color:var(--creme);text-align:center;border-radius:50px;padding:16px;position:fixed;z-index:100;left:50%;bottom:30px;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+#toast.show{visibility:visible;animation:fadein 0.5s,fadeout 0.5s 2.5s;}
+@keyframes fadein{from{bottom:0;opacity:0}to{bottom:30px;opacity:1}}
+@keyframes fadeout{from{bottom:30px;opacity:1}to{bottom:0;opacity:0}}
+.modal-enter{animation:fadeInScale 0.2s ease-out forwards;}
+@keyframes fadeInScale{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.wizard-enter{animation:slideIn 0.3s ease-out forwards;}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.wizard-input{font-size:2rem;text-align:center;font-weight:900;color:var(--verde);background-color:#f9fafb;border:2px solid #e5e7eb;border-radius:1rem;padding:1rem;width:100%;transition:all 0.3s;}
+.wizard-input:focus{outline:none;border-color:var(--verde);background-color:#e8f5ee;box-shadow:0 0 0 4px rgba(74,124,98,0.1);}
+.wizard-input::placeholder{color:#d1d5db;font-weight:400;}
+.date-input{font-size:1.1rem;text-align:center;font-weight:700;color:var(--preto);background:#f9fafb;border:2px solid #e5e7eb;border-radius:1rem;padding:.85rem 1rem;width:100%;transition:all .25s;}
+.date-input:focus{outline:none;border-color:var(--verde);background:#e8f5ee;box-shadow:0 0 0 4px rgba(74,124,98,.12);}
+.month-date-label{font-size:10px;color:var(--verde-light);font-weight:700;text-align:center;margin-top:2px;min-height:14px;}
+@media print{
+@page{size:landscape;margin:10mm;}
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;text-shadow:none!important;box-shadow:none!important;}
+body{background-color:white!important;color:black!important;margin:0;padding:0;}
+.no-print,#mobile-menu-btn,#mobile-menu,header nav,#clear-data-btn,.animate-bounce,.copy-btn,.scroll-hint-box,#wizard-modal,#photo-wizard-modal,#confirm-modal{display:none!important;}
+header{position:static!important;height:auto!important;padding:15px 0!important;background-color:var(--preto)!important;color:white!important;border-bottom:2px solid var(--verde)!important;}
+.table-container{border:1px solid #e5e7eb!important;overflow:visible!important;}
+#main-table{min-width:100%!important;width:100%!important;table-layout:fixed!important;}
+#main-table th,#main-table td{padding:4px 2px!important;font-size:8px!important;border:1px solid #e5e7eb!important;word-wrap:break-word;}
+#main-table th.sticky-col,#main-table td.sticky-col{position:static!important;width:70px!important;min-width:70px!important;box-shadow:none!important;background-color:#f3f4f6!important;}
+.measure-input{font-size:8px!important;padding:1px!important;border:none!important;color:black!important;}
+.grid>div,section,tr,li{page-break-inside:avoid!important;break-inside:avoid!important;}
+#photo-months-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:8px!important;}
 }
 </style>
 </head>
-<body class="overflow-x-hidden" style="background-color: var(--bg); color: var(--preto);">
+<body class="overflow-x-hidden" style="background-color:var(--bg);color:var(--preto);">
 
 <div id="toast">Ação realizada!</div>
 
+<!-- MODAL CONFIRMAÇÃO -->
 <div id="confirm-modal" class="fixed inset-0 z-[110] bg-black/60 hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300">
-  <div class="bg-white p-6 md:p-8 rounded-3xl max-w-sm w-full shadow-2xl modal-enter border border-gray-100">
-    <div class="flex justify-center mb-4">
-      <div class="p-3 rounded-full" style="background:#e8f5ee; color:var(--verde)">
-        <i data-lucide="alert-triangle" class="w-8 h-8"></i>
-      </div>
-    </div>
-    <h3 class="text-xl md:text-2xl font-black text-center mb-2" style="color:var(--preto)">Apagar todos os dados?</h3>
-    <p class="text-gray-500 text-center text-sm mb-8 leading-relaxed">Esta ação não pode ser desfeita. Os registros dos 12 meses serão permanentemente apagados do seu dispositivo.</p>
-    <div class="flex flex-col gap-3">
-      <button onclick="executeClearData()" class="w-full py-4 rounded-xl font-bold text-white transition shadow-lg flex justify-center items-center gap-2" style="background:var(--verde)">
-        <i data-lucide="trash-2" class="w-5 h-5"></i> SIM, APAGAR TUDO
-      </button>
-      <button onclick="closeConfirmModal()" class="w-full py-4 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition">CANCELAR</button>
-    </div>
-  </div>
+  <div class="bg-white p-6 md:p-8 rounded-3xl max-w-sm w-full shadow-2xl modal-enter border border-gray-100">
+    <div class="flex justify-center mb-4"><div class="p-3 rounded-full" style="background:#e8f5ee;color:var(--verde)"><i data-lucide="alert-triangle" class="w-8 h-8"></i></div></div>
+    <h3 class="text-xl md:text-2xl font-black text-center mb-2" style="color:var(--preto)">Apagar todos os dados?</h3>
+    <p class="text-gray-500 text-center text-sm mb-8 leading-relaxed">Esta ação não pode ser desfeita. Os registros dos 12 meses serão permanentemente apagados do seu dispositivo.</p>
+    <div class="flex flex-col gap-3">
+      <button onclick="executeClearData()" class="w-full py-4 rounded-xl font-bold text-white transition shadow-lg flex justify-center items-center gap-2" style="background:var(--verde)"><i data-lucide="trash-2" class="w-5 h-5"></i> SIM, APAGAR TUDO</button>
+      <button onclick="closeConfirmModal()" class="w-full py-4 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition">CANCELAR</button>
+    </div>
+  </div>
 </div>
 
+<!-- WIZARD MEDIDAS -->
 <div id="wizard-modal" class="fixed inset-0 z-[100] bg-white hidden flex-col transition-opacity duration-300">
-  <div class="flex items-center justify-between p-4 md:p-6 border-b border-gray-100">
-    <div>
-      <span class="text-xs font-bold text-gray-400 uppercase tracking-widest" id="wizard-month-label">MÊS 1</span>
-      <div class="flex items-center gap-2 mt-1">
-        <div class="w-24 md:w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
-          <div id="wizard-progress-bar" class="h-full transition-all duration-300 w-0" style="background:var(--verde)"></div>
-        </div>
-        <span id="wizard-progress-text" class="text-xs font-bold" style="color:var(--preto)">0/12</span>
-      </div>
-    </div>
-    <button onclick="closeWizard()" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors text-gray-500">
-      <i data-lucide="x" class="w-6 h-6"></i>
-    </button>
-  </div>
-  <div class="flex-grow flex flex-col items-center justify-center p-6 md:p-12 overflow-y-auto wizard-enter" id="wizard-content"></div>
-  <div class="p-4 md:p-6 bg-white border-t border-gray-100 flex justify-between items-center gap-4 pb-8">
-    <button id="btn-wizard-prev" onclick="wizardPrev()" class="flex-1 py-4 md:py-5 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-      <i data-lucide="chevron-left" class="w-5 h-5"></i> VOLTAR
-    </button>
-    <button id="btn-wizard-next" onclick="wizardNext()" class="flex-[2] py-4 md:py-5 rounded-xl font-black text-white transition-all transform active:scale-95 flex justify-center items-center gap-2 text-lg" style="background:var(--verde)">
-      PRÓXIMO <i data-lucide="chevron-right" class="w-5 h-5"></i>
-    </button>
-  </div>
+  <div class="flex items-center justify-between p-4 md:p-6 border-b border-gray-100">
+    <div>
+      <span class="text-xs font-bold text-gray-400 uppercase tracking-widest" id="wizard-month-label">MÊS 1</span>
+      <div class="flex items-center gap-2 mt-1">
+        <div class="w-24 md:w-32 h-2 bg-gray-100 rounded-full overflow-hidden"><div id="wizard-progress-bar" class="h-full transition-all duration-300 w-0" style="background:var(--verde)"></div></div>
+        <span id="wizard-progress-text" class="text-xs font-bold" style="color:var(--preto)">0/12</span>
+      </div>
+    </div>
+    <button onclick="closeWizard()" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors text-gray-500"><i data-lucide="x" class="w-6 h-6"></i></button>
+  </div>
+  <div class="flex-grow flex flex-col items-center justify-center p-6 md:p-12 overflow-y-auto wizard-enter" id="wizard-content"></div>
+  <div class="p-4 md:p-6 bg-white border-t border-gray-100 flex justify-between items-center gap-4 pb-8">
+    <button id="btn-wizard-prev" onclick="wizardPrev()" class="flex-1 py-4 md:py-5 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"><i data-lucide="chevron-left" class="w-5 h-5"></i> VOLTAR</button>
+    <button id="btn-wizard-next" onclick="wizardNext()" class="flex-[2] py-4 md:py-5 rounded-xl font-black text-white transition-all transform active:scale-95 flex justify-center items-center gap-2 text-lg" style="background:var(--verde)">PRÓXIMO <i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+  </div>
 </div>
 
+<!-- WIZARD FOTOS -->
 <div id="photo-wizard-modal" class="fixed inset-0 z-[100] bg-white hidden flex-col">
-  <div class="flex items-center justify-between p-4 md:p-6 border-b border-gray-100">
-    <div>
-      <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest" id="photo-wizard-label">FOTOS MÊS 1</span>
-      <div class="flex items-center gap-2 mt-1">
-        <div class="w-24 md:w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
-          <div id="photo-wizard-bar" class="h-full transition-all duration-300 w-0" style="background:var(--verde)"></div>
-        </div>
-        <span id="photo-wizard-progress" class="text-xs font-bold" style="color:var(--verde)">1/5</span>
-      </div>
-    </div>
-    <button onclick="closePhotoWizard()" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition text-gray-500"><i data-lucide="x" class="w-6 h-6"></i></button>
-  </div>
-  <div class="flex-grow flex flex-col items-center justify-center p-6 md:p-12 overflow-y-auto wizard-enter" id="photo-wizard-content"></div>
-  <div class="p-4 md:p-6 bg-white border-t border-gray-100 flex justify-between items-center gap-4 pb-8">
-    <button id="btn-photo-prev" onclick="photoWizardPrev()" class="flex-1 py-4 md:py-5 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition flex justify-center items-center gap-2 disabled:opacity-50">
-      <i data-lucide="chevron-left" class="w-5 h-5"></i> VOLTAR
-    </button>
-    <button id="btn-photo-next" onclick="photoWizardNext()" class="flex-[2] py-4 md:py-5 rounded-xl font-black text-white transition-all transform active:scale-95 flex justify-center items-center gap-2 text-lg" style="background:var(--verde)">
-      PRÓXIMO <i data-lucide="chevron-right" class="w-5 h-5"></i>
-    </button>
-  </div>
+  <div class="flex items-center justify-between p-4 md:p-6 border-b border-gray-100">
+    <div>
+      <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest" id="photo-wizard-label">FOTOS MÊS 1</span>
+      <div class="flex items-center gap-2 mt-1">
+        <div class="w-24 md:w-32 h-2 bg-gray-100 rounded-full overflow-hidden"><div id="photo-wizard-bar" class="h-full transition-all duration-300 w-0" style="background:var(--verde)"></div></div>
+        <span id="photo-wizard-progress" class="text-xs font-bold" style="color:var(--verde)">1/5</span>
+      </div>
+    </div>
+    <button onclick="closePhotoWizard()" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition text-gray-500"><i data-lucide="x" class="w-6 h-6"></i></button>
+  </div>
+  <div class="flex-grow flex flex-col items-center justify-center p-6 md:p-12 overflow-y-auto wizard-enter" id="photo-wizard-content"></div>
+  <div class="p-4 md:p-6 bg-white border-t border-gray-100 flex justify-between items-center gap-4 pb-8">
+    <button id="btn-photo-prev" onclick="photoWizardPrev()" class="flex-1 py-4 md:py-5 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition flex justify-center items-center gap-2 disabled:opacity-50"><i data-lucide="chevron-left" class="w-5 h-5"></i> VOLTAR</button>
+    <button id="btn-photo-next" onclick="photoWizardNext()" class="flex-[2] py-4 md:py-5 rounded-xl font-black text-white transition-all transform active:scale-95 flex justify-center items-center gap-2 text-lg" style="background:var(--verde)">PRÓXIMO <i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+  </div>
 </div>
 
+<!-- HEADER -->
 <header class="text-white shadow-lg sticky top-0 z-50 transition-all duration-300" id="main-header" style="background:var(--preto)">
-  <div class="container mx-auto px-4 flex justify-between items-center h-20 md:h-24 relative">
-    
-    <button id="mobile-menu-btn" class="menu-btn-mobile focus:outline-none hover:bg-white/10 rounded-full transition" aria-label="Abrir Menu">
-      <i data-lucide="menu" class="w-8 h-8"></i>
-    </button>
-
-    <div class="logo-mobile">JN</div>
-
-    <nav class="nav-desktop no-print">
-      <a href="#intro">INÍCIO</a>
-      <a href="#dica">DICA DA PROFª</a>
-      <a href="#medidas">MEDIDAS</a>
-      <a href="#tabela">TABELA</a>
-      <a href="#fotos-ev">FOTOS</a>
-    </nav>
-
-    <button onclick="window.print()" class="btn-print no-print hover:scale-105" aria-label="Imprimir">
-      <i data-lucide="printer" class="w-5 h-5"></i> <span>IMPRIMIR</span>
-    </button>
-
-  </div>
+  <div class="container mx-auto px-4 py-4 flex justify-between items-center h-24">
+    <nav style="display:flex;gap:24px;font-weight:700;font-size:11px;letter-spacing:.1em;color:#d1d5db;" class="no-print">
+      <a href="#intro" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">INÍCIO</a>
+      <a href="#dica" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">DICA DA PROFª</a>
+      <a href="#medidas" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">MEDIDAS</a>
+      <a href="#tabela" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">TABELA</a>
+      <a href="#fotos-ev" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">FOTOS</a>
+    </nav>
+    <button id="mobile-menu-btn" class="lg:hidden z-50 p-2 text-white focus:outline-none hover:bg-white/10 rounded-full transition" aria-label="Abrir Menu"><i data-lucide="menu" class="w-8 h-8"></i></button>
+    <button onclick="window.print()" class="text-white px-5 py-2 rounded-full font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg no-print" style="background:var(--verde)" aria-label="Imprimir"><i data-lucide="printer" class="w-5 h-5"></i> <span>IMPRIMIR</span></button>
+  </div>
 </header>
 
+<!-- MENU MOBILE -->
 <div id="mobile-menu" class="fixed inset-0 z-40 transform translate-x-full flex flex-col justify-center items-center text-center no-print" style="background:#18181B">
-  <nav class="flex flex-col gap-8 text-2xl font-black text-white tracking-tighter">
-    <a href="#intro" class="mobile-link hover:text-white/60 transition">INÍCIO</a>
-    <a href="#dica" class="mobile-link hover:text-white/60 transition">DICA DA PROFª</a>
-    <a href="#medidas" class="mobile-link hover:text-white/60 transition">MEDIDAS</a>
-    <a href="#tabela" class="mobile-link hover:text-white/60 transition">TABELA</a>
-    <a href="#fotos-ev" class="mobile-link hover:text-white/60 transition">FOTOS</a>
-  </nav>
-  <button onclick="window.print()" class="mt-12 text-white px-8 py-3 rounded-full font-bold text-lg shadow-xl flex items-center gap-2 mobile-link" style="background:var(--verde)">
-    <i data-lucide="printer" class="w-5 h-5"></i> IMPRIMIR GUIA
-  </button>
+  <nav class="flex flex-col gap-8 text-2xl font-black text-white tracking-tighter">
+    <a href="#intro" class="mobile-link hover:text-white/60 transition">INÍCIO</a>
+    <a href="#dica" class="mobile-link hover:text-white/60 transition">DICA DA PROFª</a>
+    <a href="#medidas" class="mobile-link hover:text-white/60 transition">MEDIDAS</a>
+    <a href="#tabela" class="mobile-link hover:text-white/60 transition">TABELA</a>
+    <a href="#fotos-ev" class="mobile-link hover:text-white/60 transition">FOTOS</a>
+  </nav>
+  <button onclick="window.print()" class="mt-12 text-white px-8 py-3 rounded-full font-bold text-lg shadow-xl flex items-center gap-2 mobile-link" style="background:var(--verde)"><i data-lucide="printer" class="w-5 h-5"></i> IMPRIMIR GUIA</button>
 </div>
 
+<!-- HERO -->
 <section id="intro" class="relative text-white py-16 md:py-24 overflow-hidden" style="background:#18181B">
-  <div class="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-overlay" style="background-image:url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1470&auto=format&fit=crop')"></div>
-  <div class="container mx-auto px-4 relative z-10 text-center">
-    <h2 class="font-bold tracking-[0.2em] mb-3 text-xs md:text-base uppercase animate-fade-in-up" style="color:var(--verde-light)">Profª Joyce Neres</h2>
-    <h1 class="text-4xl md:text-7xl font-black mb-4 leading-tight tracking-tight" style="font-family:'Playfair Display',serif; font-style:italic">
-      GUIA DE <br class="md:hidden"><span style="color:var(--verde-light)">MEDIDAS</span>
-    </h1>
-    <p class="text-base md:text-xl text-gray-300 max-w-2xl mx-auto font-light px-4 leading-relaxed">
-      A profissional que te guia no caminho de volta para si mesma.
-    </p>
-    <div class="mt-8 flex justify-center gap-2 md:gap-4">
-      <div class="w-12 md:w-16 h-1 rounded-full" style="background:var(--verde)"></div>
-      <div class="w-3 md:w-4 h-1 rounded-full" style="background:var(--verde)"></div>
-      <div class="w-12 md:w-16 h-1 rounded-full" style="background:var(--verde)"></div>
-    </div>
-    <div class="mt-10 animate-bounce">
-      <a href="#dica" class="text-gray-400 hover:text-white transition" style="display:inline-block">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="margin:0 auto"><polyline points="6 9 12 15 18 9"></polyline></svg>
-      </a>
-    </div>
-    <div class="mt-8 max-w-sm mx-auto">
-      <input type="text" id="student-name" placeholder="Digite seu nome aqui..." maxlength="60"
-        class="w-full text-center text-base font-bold px-5 py-3 rounded-full border-2 outline-none transition"
-        style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:var(--creme);"
-        oninput="saveName()"
-        onfocus="this.style.borderColor='var(--verde-light)'"
-        onblur="this.style.borderColor='rgba(255,255,255,.2)'">
-    </div>
-  </div>
+  <div class="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-overlay" style="background-image:url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1470&auto=format&fit=crop')"></div>
+  <div class="container mx-auto px-4 relative z-10 text-center">
+    <h2 class="font-bold tracking-[0.2em] mb-3 text-xs md:text-base uppercase animate-fade-in-up" style="color:var(--verde-light)">Profª Joyce Neres</h2>
+    <h1 class="text-4xl md:text-7xl font-black mb-4 leading-tight tracking-tight" style="font-family:'Playfair Display',serif;font-style:italic">GUIA DE <br class="md:hidden"><span style="color:var(--verde-light)">MEDIDAS</span></h1>
+    <p class="text-base md:text-xl text-gray-300 max-w-2xl mx-auto font-light px-4 leading-relaxed">A profissional que te guia no caminho de volta para si mesma.</p>
+    <div class="mt-8 flex justify-center gap-2 md:gap-4">
+      <div class="w-12 md:w-16 h-1 rounded-full" style="background:var(--verde)"></div>
+      <div class="w-3 md:w-4 h-1 rounded-full" style="background:var(--verde)"></div>
+      <div class="w-12 md:w-16 h-1 rounded-full" style="background:var(--verde)"></div>
+    </div>
+    <div class="mt-10 animate-bounce">
+      <a href="#dica" class="text-gray-400 hover:text-white transition" style="display:inline-block">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="margin:0 auto"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </a>
+    </div>
+    <div class="mt-8 max-w-sm mx-auto">
+      <input type="text" id="student-name" placeholder="Digite seu nome aqui..." maxlength="60" class="w-full text-center text-base font-bold px-5 py-3 rounded-full border-2 outline-none transition" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:var(--creme);" oninput="saveName()" onfocus="this.style.borderColor='var(--verde-light)'" onblur="this.style.borderColor='rgba(255,255,255,.2)'">
+    </div>
+  </div>
 </section>
 
+<!-- DICA DA PROFª -->
 <section id="dica" class="py-10 md:py-20 container mx-auto px-4 md:px-6">
-  <div class="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start">
-    <div class="w-full lg:w-1/2">
-      <h2 class="text-2xl md:text-3xl font-bold mb-6 section-title">DICA DA PROFª</h2>
-      <p class="mb-6 text-gray-600 leading-relaxed text-sm md:text-base text-justify">
-        O número na balança não define seu resultado! Ele não diferencia músculo de gordura e o seu peso será usado apenas para calcular suas necessidades individuais.
-      </p>
-      <div class="border-l-4 p-5 md:p-6 rounded-r-xl mb-8 shadow-sm" style="background:#e8f5ee; border-color:var(--verde)">
-        <h3 class="font-bold mb-4 flex items-center text-sm md:text-base" style="color:var(--verde-dark)">
-          <i data-lucide="alert-circle" class="w-5 h-5 mr-2"></i> Fatores que influenciam o peso:
-        </h3>
-        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs md:text-sm text-gray-700">
-          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Água ingerida recentemente</li>
-          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Alimentos ingeridos</li>
-          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Quantidade de sal (sódio)</li>
-          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Consumo de carboidratos</li>
-          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Período menstrual</li>
-          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Medicamentos (corticoides)</li>
-          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Volume de fezes/urina</li>
-          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Roupas pesadas</li>
-          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Horário da pesagem</li>
-          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Balanças descalibradas</li>
-        </ul>
-      </div>
-      <h3 class="font-bold text-base md:text-lg mb-3" style="color:var(--preto)">Como diminuir erros:</h3>
-      <ul class="space-y-3 text-gray-700 text-sm md:text-base">
-        <li class="flex items-start"><span class="text-white font-bold rounded-full w-6 h-6 flex items-center justify-center mr-3 text-xs mt-0.5 flex-shrink-0 shadow-md" style="background:var(--preto)">1</span>Faça a pesagem sempre no mesmo dia da semana.</li>
-        <li class="flex items-start"><span class="text-white font-bold rounded-full w-6 h-6 flex items-center justify-center mr-3 text-xs mt-0.5 flex-shrink-0 shadow-md" style="background:var(--preto)">2</span>Use sempre a mesma balança.</li>
-        <li class="flex items-start"><span class="text-white font-bold rounded-full w-6 h-6 flex items-center justify-center mr-3 text-xs mt-0.5 flex-shrink-0 shadow-md" style="background:var(--preto)">3</span>Pese-se pela manhã, em jejum, depois de ir ao banheiro e com o mínimo de roupa.</li>
-      </ul>
-    </div>
-    <div class="w-full lg:w-1/2 bg-white p-6 md:p-8 shadow-2xl rounded-2xl border-t-4 transform md:rotate-1 hover:rotate-0 transition duration-500" style="border-color:var(--verde)">
-      <div class="text-center mb-8">
-        <div class="inline-block p-4 rounded-full mb-4 ring-4" style="background:#e8f5ee; color:var(--verde); ring-color:#e8f5ee; --tw-ring-color:#4A7C62; box-shadow: 0 0 0 4px #4A7C62">
-          <i data-lucide="activity" class="w-10 h-10"></i>
-        </div>
-        <h3 class="text-xl font-bold">Protocolo de Avaliação</h3>
-      </div>
-      <div class="space-y-4">
-        <div class="flex items-center p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-green-200 transition">
-          <div class="text-3xl font-black text-gray-200 mr-4">01</div>
-          <div><h4 class="font-bold text-sm md:text-base">Circunferências</h4><p class="text-xs md:text-sm text-gray-500">Uso de fita métrica para medir perímetros.</p></div>
-        </div>
-        <div class="flex items-center p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-green-200 transition">
-          <div class="text-3xl font-black text-gray-200 mr-4">02</div>
-          <div><h4 class="font-bold text-sm md:text-base">Fotos Evolutivas</h4><p class="text-xs md:text-sm text-gray-500">Comparativo visual mensal.</p></div>
-        </div>
-        <div class="p-4 rounded-xl border text-xs md:text-sm italic text-center" style="background:#e8f5ee; border-color:#b8d8c5; color:var(--verde-dark)">
-          A melhor maneira de avaliar a composição corporal é com um profissional qualificado.
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start">
+    <div class="w-full lg:w-1/2">
+      <h2 class="text-2xl md:text-3xl font-bold mb-6 section-title">DICA DA PROFª</h2>
+      <p class="mb-6 text-gray-600 leading-relaxed text-sm md:text-base text-justify">O número na balança não define seu resultado! Ele não diferencia músculo de gordura e o seu peso será usado apenas para calcular suas necessidades individuais.</p>
+      <div class="border-l-4 p-5 md:p-6 rounded-r-xl mb-8 shadow-sm" style="background:#e8f5ee;border-color:var(--verde)">
+        <h3 class="font-bold mb-4 flex items-center text-sm md:text-base" style="color:var(--verde-dark)"><i data-lucide="alert-circle" class="w-5 h-5 mr-2"></i> Fatores que influenciam o peso:</h3>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs md:text-sm text-gray-700">
+          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Água ingerida recentemente</li>
+          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Alimentos ingeridos</li>
+          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Quantidade de sal (sódio)</li>
+          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Consumo de carboidratos</li>
+          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Período menstrual</li>
+          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Medicamentos (corticoides)</li>
+          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Volume de fezes/urina</li>
+          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Roupas pesadas</li>
+          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Horário da pesagem</li>
+          <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" style="color:var(--verde)"></i> Balanças descalibradas</li>
+        </ul>
+      </div>
+      <h3 class="font-bold text-base md:text-lg mb-3" style="color:var(--preto)">Como diminuir erros:</h3>
+      <ul class="space-y-3 text-gray-700 text-sm md:text-base">
+        <li class="flex items-start"><span class="text-white font-bold rounded-full w-6 h-6 flex items-center justify-center mr-3 text-xs mt-0.5 flex-shrink-0 shadow-md" style="background:var(--preto)">1</span>Faça a pesagem sempre no mesmo dia da semana.</li>
+        <li class="flex items-start"><span class="text-white font-bold rounded-full w-6 h-6 flex items-center justify-center mr-3 text-xs mt-0.5 flex-shrink-0 shadow-md" style="background:var(--preto)">2</span>Use sempre a mesma balança.</li>
+        <li class="flex items-start"><span class="text-white font-bold rounded-full w-6 h-6 flex items-center justify-center mr-3 text-xs mt-0.5 flex-shrink-0 shadow-md" style="background:var(--preto)">3</span>Pese-se pela manhã, em jejum, depois de ir ao banheiro e com o mínimo de roupa.</li>
+      </ul>
+    </div>
+    <div class="w-full lg:w-1/2 bg-white p-6 md:p-8 shadow-2xl rounded-2xl border-t-4 transform md:rotate-1 hover:rotate-0 transition duration-500" style="border-color:var(--verde)">
+      <div class="text-center mb-8">
+        <div class="inline-block p-4 rounded-full mb-4 ring-4" style="background:#e8f5ee;color:var(--verde);ring-color:#e8f5ee;--tw-ring-color:#4A7C62;box-shadow:0 0 0 4px #4A7C62"><i data-lucide="activity" class="w-10 h-10"></i></div>
+        <h3 class="text-xl font-bold">Protocolo de Avaliação</h3>
+      </div>
+      <div class="space-y-4">
+        <div class="flex items-center p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-green-200 transition"><div class="text-3xl font-black text-gray-200 mr-4">01</div><div><h4 class="font-bold text-sm md:text-base">Circunferências</h4><p class="text-xs md:text-sm text-gray-500">Uso de fita métrica para medir perímetros.</p></div></div>
+        <div class="flex items-center p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-green-200 transition"><div class="text-3xl font-black text-gray-200 mr-4">02</div><div><h4 class="font-bold text-sm md:text-base">Fotos Evolutivas</h4><p class="text-xs md:text-sm text-gray-500">Comparativo visual mensal.</p></div></div>
+        <div class="p-4 rounded-xl border text-xs md:text-sm italic text-center" style="background:#e8f5ee;border-color:#b8d8c5;color:var(--verde-dark)">A melhor maneira de avaliar a composição corporal é com um profissional qualificado.</div>
+      </div>
+    </div>
+  </div>
 </section>
 
+<!-- MEDIDAS -->
 <section id="medidas" class="py-12 md:py-20" style="background:#EAEDE6">
-  <div class="container mx-auto px-4">
-    <div class="text-center mb-10">
-      <h2 class="text-2xl md:text-3xl font-bold mb-2 section-title inline-block" style="color:var(--preto)">COMO MEDIR</h2>
-      <div class="bg-white inline-block mt-6 mb-2 px-4 py-2 rounded-full shadow-sm border border-gray-200">
-        <p class="text-gray-700 text-xs md:text-sm font-bold flex items-center gap-2">
-          <i data-lucide="info" class="w-4 h-4" style="color:var(--verde)"></i>
-          Os exemplos servem para homens e mulheres.
-        </p>
-      </div>
-      <p class="text-gray-500 text-sm mt-2">Siga as instruções detalhadas abaixo.</p>
-    </div>
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-10">
+      <h2 class="text-2xl md:text-3xl font-bold mb-2 section-title inline-block" style="color:var(--preto)">COMO MEDIR</h2>
+      <div class="bg-white inline-block mt-6 mb-2 px-4 py-2 rounded-full shadow-sm border border-gray-200"><p class="text-gray-700 text-xs md:text-sm font-bold flex items-center gap-2"><i data-lucide="info" class="w-4 h-4" style="color:var(--verde)"></i>Os exemplos servem para homens e mulheres.</p></div>
+      <p class="text-gray-500 text-sm mt-2">Siga as instruções detalhadas abaixo.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12">
+      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)"><div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative"><img src="https://i.imgur.com/9j5tS6G.png" loading="lazy" alt="Medida Antebraço" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105"></div><div class="p-5 md:p-6 border-t border-gray-100 flex-grow"><div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider" style="background:#e8f5ee;color:var(--verde-dark)">Superior</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">1. Antebraço</h3></div><p class="text-xs md:text-sm text-gray-600 leading-relaxed">Região de maior circunferência do antebraço.</p></div></div>
+      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)"><div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative"><img src="https://i.imgur.com/JXNNlV0.png" loading="lazy" alt="Medida Braço Relaxado" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105"></div><div class="p-5 md:p-6 border-t border-gray-100 flex-grow"><div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider" style="background:#e8f5ee;color:var(--verde-dark)">Superior</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">2. Braço Relaxado</h3></div><p class="text-xs md:text-sm text-gray-600 leading-relaxed">Região de maior circunferência do braço relaxado.</p></div></div>
+      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)"><div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative"><img src="https://i.imgur.com/oEN8KqT.png" loading="lazy" alt="Medida Braço Contraído" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105"></div><div class="p-5 md:p-6 border-t border-gray-100 flex-grow"><div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider" style="background:#e8f5ee;color:var(--verde-dark)">Superior</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">3. Braço Contraído</h3></div><p class="text-xs md:text-sm text-gray-600 leading-relaxed">Região de maior circunferência do braço contraído.</p></div></div>
+      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)"><div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative"><img src="https://i.imgur.com/ZR5a1Fg.png" loading="lazy" alt="Medida Ombro" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105"></div><div class="p-5 md:p-6 border-t border-gray-100 flex-grow"><div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider bg-zinc-200 text-zinc-700">Tronco</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">4. Ombro</h3></div><p class="text-xs md:text-sm text-gray-600 leading-relaxed">Passe a fita métrica ao redor do corpo entre os pontos mais largos de cada ombro. É recomendável pedir ajuda a uma outra pessoa para tirar essa medida.</p></div></div>
+      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)"><div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative"><img src="https://i.imgur.com/GVMiOPF.png" loading="lazy" alt="Medida Tórax" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105"></div><div class="p-5 md:p-6 border-t border-gray-100 flex-grow"><div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider bg-zinc-200 text-zinc-700">Tronco</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">5. Tórax</h3></div><p class="text-xs md:text-sm text-gray-600 leading-relaxed">Passe a fita métrica por debaixo das axilas, envolvendo a parte mais larga do seu tórax.<br><strong>Homens:</strong> a fita deve ser posicionada na linha dos mamilos.<br><strong>Mulheres:</strong> a fita deve ser posicionada 2 dedos acima da linha dos mamilos.</p></div></div>
+      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)"><div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative"><img src="https://i.imgur.com/YcFu0nE.png" loading="lazy" alt="Medida Cintura" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105"></div><div class="p-5 md:p-6 border-t border-gray-100 flex-grow"><div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider bg-zinc-200 text-zinc-700">Tronco</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">6. Cintura</h3></div><p class="text-xs md:text-sm text-gray-600 leading-relaxed">Passe a fita métrica na região entre a última costela e o osso ilíaco (aquele do quadril), geralmente ficando um ou dois dedos acima do umbigo.</p></div></div>
+      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)"><div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative"><img src="https://i.imgur.com/eVdePfT.png" loading="lazy" alt="Medida Abdômen" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105"></div><div class="p-5 md:p-6 border-t border-gray-100 flex-grow"><div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider bg-zinc-200 text-zinc-700">Tronco</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">7. Abdômen</h3></div><p class="text-xs md:text-sm text-gray-600 leading-relaxed">Passe a fita métrica horizontalmente por cima do seu umbigo.</p></div></div>
+      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)"><div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative"><img src="https://i.imgur.com/eYceyFN.png" loading="lazy" alt="Medida Quadril" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105"></div><div class="p-5 md:p-6 border-t border-gray-100 flex-grow"><div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider text-white" style="background:var(--preto)">Inferior</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">8. Quadril</h3></div><p class="text-xs md:text-sm text-gray-600 leading-relaxed">Geralmente localizado no meio do glúteo.</p></div></div>
+      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)"><div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative"><img src="https://i.imgur.com/4SO5yjE.png" loading="lazy" alt="Medida Coxa" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105"></div><div class="p-5 md:p-6 border-t border-gray-100 flex-grow"><div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider text-white" style="background:var(--preto)">Inferior</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">9. Coxa</h3></div><p class="text-xs md:text-sm text-gray-600 leading-relaxed">Região de maior circunferência da coxa.</p></div></div>
+      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)"><div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative"><img src="https://i.imgur.com/HarZ9G3.png" loading="lazy" alt="Medida Panturrilha" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105"></div><div class="p-5 md:p-6 border-t border-gray-100 flex-grow"><div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider text-white" style="background:var(--preto)">Inferior</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">10. Panturrilha</h3></div><p class="text-xs md:text-sm text-gray-600 leading-relaxed">Região de maior circunferência da panturrilha.</p></div></div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border-t-4 border-green-500"><h3 class="font-bold text-lg md:text-xl mb-6 text-center text-green-700 flex items-center justify-center gap-2"><i data-lucide="thumbs-up" class="w-5 h-5"></i> O que fazer?</h3><ul class="space-y-4 text-gray-700 text-sm md:text-base"><li class="flex items-start"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5"></i><span>Posicione a fita métrica sempre na região de <strong>maior circunferência</strong> da parte que pretende medir;</span></li><li class="flex items-start"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5"></i><span>Fique o mais <strong>relaxada e imóvel possível</strong> para assegurar a precisão dos resultados;</span></li><li class="flex items-start"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5"></i><span>Meça <strong>ambos os lados do corpo</strong> para verificar a simetria e proporcionalidade entre as partes;</span></li><li class="flex items-start"><i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5"></i><span>Mantenha registro das medições para acompanhar seu progresso.</span></li></ul></div>
+      <div class="text-white p-6 md:p-8 rounded-2xl shadow-lg border-t-4" style="background:#27272A;border-color:var(--verde)"><h3 class="font-bold text-lg md:text-xl mb-6 text-center flex items-center justify-center gap-2" style="color:var(--verde-light)"><i data-lucide="thumbs-down" class="w-5 h-5"></i> O que NÃO fazer?</h3><ul class="space-y-4 text-gray-300 text-sm md:text-base"><li class="flex items-start"><i data-lucide="x-circle" class="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" style="color:var(--verde-light)"></i><span>Evite se exercitar antes de realizar as medições, pois o inchaço muscular compromete a precisão dos resultados;</span></li><li class="flex items-start"><i data-lucide="x-circle" class="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" style="color:var(--verde-light)"></i><span>Não aperte e nem afrouxe a fita demasiadamente. Apenas deixe rente ao corpo de forma firme e confortável.</span></li></ul></div>
+    </div>
+  </div>
+</section>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12">
-      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)">
-        <div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative">
-          <img src="https://i.imgur.com/uCxnbJU.png" loading="lazy" alt="Medida Antebraço" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105">
-        </div>
-        <div class="p-5 md:p-6 border-t border-gray-100 flex-grow">
-          <div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider" style="background:#e8f5ee; color:var(--verde-dark)">Superior</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">1. Antebraço</h3></div>
-          <p class="text-xs md:text-sm text-gray-600 leading-relaxed">Região de maior circunferência do antebraço.</p>
-        </div>
-      </div>
-      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)">
-        <div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative">
-          <img src="https://i.imgur.com/Otrdl3V.png" loading="lazy" alt="Medida Braço Relaxado" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105">
-        </div>
-        <div class="p-5 md:p-6 border-t border-gray-100 flex-grow">
-          <div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider" style="background:#e8f5ee; color:var(--verde-dark)">Superior</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">2. Braço Relaxado</h3></div>
-          <p class="text-xs md:text-sm text-gray-600 leading-relaxed">Região de maior circunferência do braço relaxado.</p>
-        </div>
-      </div>
-      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)">
-        <div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative">
-          <img src="https://i.imgur.com/MtqOps4.png" loading="lazy" alt="Medida Braço Contraído" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105">
-        </div>
-        <div class="p-5 md:p-6 border-t border-gray-100 flex-grow">
-          <div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider" style="background:#e8f5ee; color:var(--verde-dark)">Superior</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">3. Braço Contraído</h3></div>
-          <p class="text-xs md:text-sm text-gray-600 leading-relaxed">Região de maior circunferência do braço contraído.</p>
-        </div>
-      </div>
-      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)">
-        <div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative">
-          <img src="https://i.imgur.com/MOVWH2W.jpeg" loading="lazy" alt="Medida Ombro" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105">
-        </div>
-        <div class="p-5 md:p-6 border-t border-gray-100 flex-grow">
-          <div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider bg-zinc-200 text-zinc-700">Tronco</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">4. Ombro</h3></div>
-          <p class="text-xs md:text-sm text-gray-600 leading-relaxed">Passe a fita métrica ao redor do corpo entre os pontos mais largos de cada ombro. É recomendável pedir ajuda a uma outra pessoa para tirar essa medida.</p>
-        </div>
-      </div>
-      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)">
-        <div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative">
-          <img src="https://i.imgur.com/zooj44o.jpeg" loading="lazy" alt="Medida Tórax" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105">
-        </div>
-        <div class="p-5 md:p-6 border-t border-gray-100 flex-grow">
-          <div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider bg-zinc-200 text-zinc-700">Tronco</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">5. Tórax</h3></div>
-          <p class="text-xs md:text-sm text-gray-600 leading-relaxed">Passe a fita métrica por debaixo das axilas, envolvendo a parte mais larga do seu tórax.<br><strong>Homens:</strong> a fita deve ser posicionada na linha dos mamilos.<br><strong>Mulheres:</strong> a fita deve ser posicionada 2 dedos acima da linha dos mamilos.</p>
-        </div>
-      </div>
-      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)">
-        <div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative">
-          <img src="https://i.imgur.com/YuUkxt9.jpeg" loading="lazy" alt="Medida Cintura" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105">
-        </div>
-        <div class="p-5 md:p-6 border-t border-gray-100 flex-grow">
-          <div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider bg-zinc-200 text-zinc-700">Tronco</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">6. Cintura</h3></div>
-          <p class="text-xs md:text-sm text-gray-600 leading-relaxed">Passe a fita métrica na região entre a última costela e o osso ilíaco (aquele do quadril), geralmente ficando um ou dois dedos acima do umbigo.</p>
-        </div>
-      </div>
-      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)">
-        <div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative">
-          <img src="https://i.imgur.com/7m6CHrX.png" loading="lazy" alt="Medida Abdômen" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105">
-        </div>
-        <div class="p-5 md:p-6 border-t border-gray-100 flex-grow">
-          <div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider bg-zinc-200 text-zinc-700">Tronco</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">7. Abdômen</h3></div>
-          <p class="text-xs md:text-sm text-gray-600 leading-relaxed">Passe a fita métrica horizontalmente por cima do seu umbigo.</p>
-        </div>
-      </div>
-      <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 border-b-4 group flex flex-col" style="border-color:var(--verde)">
-        <div class="h-64 md:h-80 overflow-hidden bg-white p-2 flex items-center justify-center relative">
-          <img src="https://i.imgur.com/aLQLZLh.png" loading="lazy" alt="Medida Quadril" class="w-full h-full object-contain z-10 transition-transform duration-500 group-hover:scale-105">
-        </div>
-        <div class="p-5 md:p-6 border-t border-gray-100 flex-grow">
-          <div class="flex items-center gap-2 mb-3"><span class="text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider text-white" style="background:var(--preto)">Inferior</span><h3 class="font-bold text-base md:text-lg" style="color:var(--preto)">8. Quadril</h3></div>
-          <p class="text
+<!-- TABELA -->
+<section id="tabela" class="py-12 md:py-20 container mx-auto px-4">
+  <div class="text-center mb-6">
+    <h2 class="text-2xl md:text-3xl font-bold section-title" style="color:var(--preto)">REGISTRO (12 MESES)</h2>
+    <p class="text-gray-500 mt-2 text-sm md:text-base">Acompanhe sua evolução. <strong style="color:var(--verde)">No celular, clique em "Preencher"</strong> para uma experiência otimizada.</p>
+  </div>
+  <div class="flex justify-center items-center mb-4 font-bold text-sm py-2 px-4 rounded-full max-w-xs mx-auto border scroll-hint-box" style="color:var(--verde);background:#e8f5ee;border-color:#b8d8c5"><i data-lucide="move-horizontal" class="w-5 h-5 mr-2"></i><span>Deslize a tabela para ver mais meses</span></div>
+  <div class="flex justify-center mb-6"><button onclick="showConfirmModal()" class="text-xs underline no-print cursor-pointer px-4 py-2" style="color:var(--cinza)">Limpar todos os dados salvos</button></div>
+  <div class="overflow-x-auto table-container rounded-lg shadow-xl">
+    <table id="main-table" class="w-full border-collapse bg-white text-xs md:text-sm text-center min-w-[2200px]">
+      <thead>
+        <tr class="text-white uppercase text-[10px] md:text-xs tracking-wider" style="background:var(--preto)">
+          <th class="p-3 md:p-4 text-left w-[200px] sticky-col border-r border-zinc-700" style="background:var(--preto)">Medida (cm)</th>
+          <script>
+            for(let i=1;i<=12;i++){const bg=i%2===0?'#222':'#1a1a1a';document.write(`<th class="p-3 md:p-4 border-l border-zinc-700 min-w-[160px]" style="background:${bg}"><div class="flex flex-col items-center gap-2"><span class="font-bold text-sm">Mês ${i}</span><div id="tbl-date-m${i}" class="month-date-label"></div><button onclick="openWizard(${i})" class="w-full font-bold px-3 py-2 rounded-lg transition-colors flex items-center justify-center gap-1 text-[10px] shadow-sm mb-1" style="background:var(--verde);color:white"><i data-lucide="edit-3" class="w-3 h-3"></i> PREENCHER</button><button onclick="copyMonthData(${i})" class="w-full px-3 py-2 rounded-lg transition-colors flex items-center justify-center gap-1 text-[10px] shadow-sm text-gray-300" style="background:rgba(255,255,255,.1)"><i data-lucide="copy" class="w-3 h-3"></i> COPIAR</button></div></th>`);}
+          </script>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr class="font-bold" style="color:var(--verde-dark)">
+          <td class="p-3 md:p-4 text-left sticky-col border-r border-green-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]" style="background:#e8f5ee">Peso (kg)</td>
+          <script>for(let i=1;i<=12;i++){const bg=i%2===0?'#e8f5ee':'#dff0e8';document.write(`<td class="border-l border-green-200" style="background:${bg}"><input type="text" inputmode="decimal" class="measure-input text-base" data-id="peso-m${i}" data-label="Peso" placeholder="-"></td>`);}</script>
+        </tr>
+        <tr><td colspan="13" class="p-2 text-left text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-4 sticky left-0 bg-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10">Membros Superiores</td></tr>
+        <tr class="hover:bg-gray-50 transition"><td class="p-3 text-left text-gray-700 font-semibold sticky-col bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Antebraço</td><script>for(let i=1;i<=12;i++){const bg=i%2===0?'bg-gray-50':'bg-white';document.write(`<td class="border-l border-gray-200 ${bg}"><div class="flex divide-x divide-gray-200"><input type="text" inputmode="decimal" class="measure-input placeholder:text-[10px] md:placeholder:text-xs" data-id="ant-l-m${i}" data-label="Antebraço Esq" placeholder="Esq"><input type="text" inputmode="decimal" class="measure-input placeholder:text-[10px] md:placeholder:text-xs" data-id="ant-r-m${i}" data-label="Antebraço Dir" placeholder="Dir"></div></td>`);}</script></tr>
+        <tr class="hover:bg-gray-50 transition"><td class="p-3 text-left text-gray-700 font-semibold sticky-col bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Braço Relaxado</td><script>for(let i=1;i<=12;i++){const bg=i%2===0?'bg-gray-50':'bg-white';document.write(`<td class="border-l border-gray-200 ${bg}"><div class="flex divide-x divide-gray-200"><input type="text" inputmode="decimal" class="measure-input placeholder:text-[10px] md:placeholder:text-xs" data-id="brlx-l-m${i}" data-label="Braço Relaxado Esq" placeholder="Esq"><input type="text" inputmode="decimal" class="measure-input placeholder:text-[10px] md:placeholder:text-xs" data-id="brlx-r-m${i}" data-label="Braço Relaxado Dir" placeholder="Dir"></div></td>`);}</script></tr>
+        <tr class="hover:bg-gray-50 transition"><td class="p-3 text-left text-gray-700 font-semibold sticky-col bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Braço Contraído</td><script>for(let i=1;i<=12;i++){const bg=i%2===0?'bg-gray-50':'bg-white';document.write(`<td class="border-l border-gray-200 ${bg}"><div class="flex divide-x divide-gray-200"><input type="text" inputmode="decimal" class="measure-input placeholder:text-[10px] md:placeholder:text-xs" data-id="bcon-l-m${i}" data-label="Braço Contraído Esq" placeholder="Esq"><input type="text" inputmode="decimal" class="measure-input placeholder:text-[10px] md:placeholder:text-xs" data-id="bcon-r-m${i}" data-label="Braço Contraído Dir" placeholder="Dir"></div></td>`);}</script></tr>
+        <tr><td colspan="13" class="p-2 text-left text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-4 sticky left-0 bg-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10">Tronco</td></tr>
+        <tr class="hover:bg-gray-50 transition"><td class="p-3 text-left text-gray-700 font-semibold sticky-col bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Ombro</td><script>for(let i=1;i<=12;i++){const bg=i%2===0?'bg-gray-50':'bg-white';document.write(`<td class="border-l border-gray-200 px-2 ${bg}"><input type="text" inputmode="decimal" class="measure-input" data-id="omb-m${i}" data-label="Ombro" placeholder="-"></td>`);}</script></tr>
+        <tr class="hover:bg-gray-50 transition"><td class="p-3 text-left text-gray-700 font-semibold sticky-col bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Tórax</td><script>for(let i=1;i<=12;i++){const bg=i%2===0?'bg-gray-50':'bg-white';document.write(`<td class="border-l border-gray-200 px-2 ${bg}"><input type="text" inputmode="decimal" class="measure-input" data-id="tor-m${i}" data-label="Tórax" placeholder="-"></td>`);}</script></tr>
+        <tr class="hover:bg-gray-50 transition"><td class="p-3 text-left text-gray-700 font-semibold sticky-col bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Cintura</td><script>for(let i=1;i<=12;i++){const bg=i%2===0?'bg-gray-50':'bg-white';document.write(`<td class="border-l border-gray-200 px-2 ${bg}"><input type="text" inputmode="decimal" class="measure-input" data-id="cin-m${i}" data-label="Cintura" placeholder="-"></td>`);}</script></tr>
+        <tr class="hover:bg-gray-50 transition"><td class="p-3 text-left text-gray-700 font-semibold sticky-col bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Abdômen</td><script>for(let i=1;i<=12;i++){const bg=i%2===0?'bg-gray-50':'bg-white';document.write(`<td class="border-l border-gray-200 px-2 ${bg}"><input type="text" inputmode="decimal" class="measure-input" data-id="abd-m${i}" data-label="Abdômen" placeholder="-"></td>`);}</script></tr>
+        <tr><td colspan="13" class="p-2 text-left text-[10px] font-bold text-zinc-500 uppercase tracking-widest pl-4 sticky left-0 bg-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10">Membros Inferiores</td></tr>
+        <tr class="hover:bg-gray-50 transition"><td class="p-3 text-left text-gray-700 font-semibold sticky-col bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Quadril</td><script>for(let i=1;i<=12;i++){const bg=i%2===0?'bg-gray-50':'bg-white';document.write(`<td class="border-l border-gray-200 px-2 ${bg}"><input type="text" inputmode="decimal" class="measure-input" data-id="qua-m${i}" data-label="Quadril" placeholder="-"></td>`);}</script></tr>
+        <tr class="hover:bg-gray-50 transition"><td class="p-3 text-left text-gray-700 font-semibold sticky-col bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Coxa</td><script>for(let i=1;i<=12;i++){const bg=i%2===0?'bg-gray-50':'bg-white';document.write(`<td class="border-l border-gray-200 ${bg}"><div class="flex divide-x divide-gray-200"><input type="text" inputmode="decimal" class="measure-input placeholder:text-[10px] md:placeholder:text-xs" data-id="cox-l-m${i}" data-label="Coxa Esq" placeholder="Esq"><input type="text" inputmode="decimal" class="measure-input placeholder:text-[10px] md:placeholder:text-xs" data-id="cox-r-m${i}" data-label="Coxa Dir" placeholder="Dir"></div></td>`);}</script></tr>
+        <tr class="hover:bg-gray-50 transition"><td class="p-3 text-left text-gray-700 font-semibold sticky-col bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Panturrilha</td><script>for(let i=1;i<=12;i++){const bg=i%2===0?'bg-gray-50':'bg-white';document.write(`<td class="border-l border-gray-200 ${bg}"><div class="flex divide-x divide-gray-200"><input type="text" inputmode="decimal" class="measure-input placeholder:text-[10px] md:placeholder:text-xs" data-id="pan-l-m${i}" data-label="Panturrilha Esq" placeholder="Esq"><input type="text" inputmode="decimal" class="measure-input placeholder:text-[10px] md:placeholder:text-xs" data-id="pan-r-m${i}" data-label="Panturrilha Dir" placeholder="Dir"></div></td>`);}</script></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FOTOS EVOLUTIVAS -->
+<section id="fotos-ev" class="text-white py-16 md:py-24" style="background:#18181B">
+  <div class="container mx-auto px-4 md:px-6">
+    <div class="flex flex-col lg:flex-row items-start gap-10 lg:gap-16 mb-12">
+      <div class="w-full lg:w-1/3 text-center lg:text-right flex flex-col items-center lg:items-end">
+        <h2 class="text-3xl md:text-5xl font-black mb-2 tracking-tighter" style="color:var(--verde-light);font-family:'Playfair Display',serif;font-style:italic">FOTOS</h2>
+        <h3 class="text-xl md:text-3xl font-bold mb-4 text-white">EVOLUTIVAS</h3>
+        <p class="text-gray-400 text-sm md:text-base max-w-xs lg:max-w-none">Acompanhe visualmente o que os números não mostram.</p>
+      </div>
+      <div class="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-zinc-800 p-6 rounded-2xl border border-zinc-700 hover:border-green-600 transition group flex flex-col items-center text-center sm:items-start sm:text-left"><i data-lucide="camera" class="w-8 h-8 mb-3 group-hover:scale-110 transition" style="color:var(--verde-light)"></i><h4 class="font-bold mb-2 text-lg">Posição</h4><p class="text-xs text-gray-400 leading-relaxed">De frente, costas e perfis. Mantenha a distância.</p></div>
+        <div class="bg-zinc-800 p-6 rounded-2xl border border-zinc-700 hover:border-green-600 transition group flex flex-col items-center text-center sm:items-start sm:text-left"><i data-lucide="sun" class="w-8 h-8 mb-3 group-hover:scale-110 transition" style="color:var(--verde-light)"></i><h4 class="font-bold mb-2 text-lg">Luz</h4><p class="text-xs text-gray-400 leading-relaxed">Luz natural de frente. Evite sombras fortes.</p></div>
+        <div class="bg-zinc-800 p-6 rounded-2xl border border-zinc-700 hover:border-green-600 transition group flex flex-col items-center text-center sm:items-start sm:text-left"><i data-lucide="calendar" class="w-8 h-8 mb-3 group-hover:scale-110 transition" style="color:var(--verde-light)"></i><h4 class="font-bold mb-2 text-lg">Frequência</h4><p class="text-xs text-gray-400 leading-relaxed">A cada 30 dias, preferencialmente em jejum.</p></div>
+      </div>
+    </div>
+    <div class="flex justify-center w-full mb-14">
+      <div class="relative w-full max-w-6xl rounded-lg overflow-hidden border-4 shadow-2xl" style="border-color:var(--verde)">
+        <img src="https://i.imgur.com/bid7uV5.png" loading="eager" alt="Exemplo Foto Evolutiva" class="w-full h-auto object-cover">
+      </div>
+    </div>
+    <h3 class="text-xl font-black mb-2 uppercase tracking-widest text-center" style="color:var(--creme)">Seus Registros Mensais</h3>
+    <p class="text-center text-sm mb-8 text-gray-400">Clique em "Preencher" para adicionar suas fotos do mês.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="photo-months-grid"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="text-white text-center py-12 md:py-20 border-t-4" style="background:#000;border-color:var(--verde)">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl md:text-6xl font-black leading-tight mb-8 serif italic" style="font-family:'Playfair Display',serif;font-style:italic;color:var(--creme)">Sua vez de Começar<br>e Permanecer</h2>
+    <a href="https://www.instagram.com/joyceneresef/" target="_blank" class="inline-flex items-center text-white font-bold py-4 px-10 rounded-full transition-all transform hover:scale-105 mb-6 text-sm md:text-base no-print" style="background:var(--verde)"><i data-lucide="instagram" class="w-5 h-5 mr-2"></i>ACOMPANHE NO INSTAGRAM</a>
+    <p class="text-sm max-w-xl mx-auto mt-2 mb-16" style="color:rgba(240,237,230,.4)">O suporte para quem decidiu se escolher novamente e a não se deixar para depois.</p>
+    <div class="font-black text-4xl md:text-7xl tracking-tighter mb-8 select-none" style="color:rgba(255,255,255,.07)">#VAMOSJUNTAS</div>
+    <p class="text-xs md:text-sm" style="color:rgba(240,237,230,.15)">© 2026 PROFª JOYCE NERES</p>
+  </div>
+</footer>
+
+<script>
+function initLucide(){if(typeof lucide!=='undefined'){lucide.createIcons();}else{setTimeout(initLucide,100);}}
+initLucide();
+
+const mbtn=document.getElementById('mobile-menu-btn'),mmenu=document.getElementById('mobile-menu');
+let mopen=false;
+mbtn.addEventListener('click',()=>{mopen=!mopen;if(mopen){mmenu.classList.remove('translate-x-full');mbtn.innerHTML='<i data-lucide="x" class="w-8 h-8"></i>';document.body.style.overflow='hidden';}else{mmenu.classList.add('translate-x-full');mbtn.innerHTML='<i data-lucide="menu" class="w-8 h-8"></i>';document.body.style.overflow='auto';}initLucide();});
+document.querySelectorAll('.mobile-link').forEach(l=>l.addEventListener('click',()=>{mopen=false;mmenu.classList.add('translate-x-full');mbtn.innerHTML='<i data-lucide="menu" class="w-8 h-8"></i>';initLucide();document.body.style.overflow='auto';}));
+
+function saveName(){localStorage.setItem('joyce_name',document.getElementById('student-name').value);}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const n=localStorage.getItem('joyce_name');
+  if(n)document.getElementById('student-name').value=n;
+  setTimeout(()=>{
+    document.querySelectorAll('.measure-input').forEach(inp=>{
+      const sv=localStorage.getItem(inp.dataset.id);
+      if(sv)inp.value=sv;
+      inp.addEventListener('input',e=>localStorage.setItem(e.target.dataset.id,e.target.value));
+    });
+    for(let i=1;i<=12;i++){const d=localStorage.getItem(`date-m${i}`);const el=document.getElementById(`tbl-date-m${i}`);if(d&&el)el.textContent=d;}
+    buildPhotoGrid();
+    initLucide();
+  },100);
+});
+
+function showConfirmModal(){document.getElementById('confirm-modal').classList.replace('hidden','flex');document.body.style.overflow='hidden';}
+function closeConfirmModal(){document.getElementById('confirm-modal').classList.replace('flex','hidden');document.body.style.overflow='auto';}
+function executeClearData(){localStorage.clear();location.reload();}
+
+let wM=1,wS=0;
+const wSteps=[
+  {id:'date',title:'Data do Registro',desc:'Informe a data desta avaliação.',type:'date'},
+  {id:'peso',title:'Peso Corporal',desc:'Sua pesagem atual em jejum, se possível.',type:'single',label:'Peso (kg)',image:null},
+  {id:'ant',title:'Antebraço',desc:'Região de maior circunferência do antebraço.',type:'double',image:'https://i.imgur.com/9j5tS6G.png'},
+  {id:'brlx',title:'Braço Relaxado',desc:'Região de maior circunferência do braço relaxado.',type:'double',image:'https://i.imgur.com/JXNNlV0.png'},
+  {id:'bcon',title:'Braço Contraído',desc:'Região de maior circunferência do braço contraído.',type:'double',image:'https://i.imgur.com/oEN8KqT.png'},
+  {id:'omb',title:'Ombro',desc:'Passe a fita métrica ao redor do corpo entre os pontos mais largos de cada ombro.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/ZR5a1Fg.png'},
+  {id:'tor',title:'Tórax',desc:'Debaixo das axilas. Homens: na linha dos mamilos. Mulheres: 2 dedos acima.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/GVMiOPF.png'},
+  {id:'cin',title:'Cintura',desc:'Entre a última costela e o osso ilíaco, geralmente 2 dedos acima do umbigo.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/YcFu0nE.png'},
+  {id:'abd',title:'Abdômen',desc:'Passe a fita métrica horizontalmente por cima do seu umbigo.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/eVdePfT.png'},
+  {id:'qua',title:'Quadril',desc:'Posicione a fita na região mais larga, geralmente no meio do glúteo.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/eYceyFN.png'},
+  {id:'cox',title:'Coxa',desc:'Região de maior circunferência da coxa.',type:'double',image:'https://i.imgur.com/4SO5yjE.png'},
+  {id:'pan',title:'Panturrilha',desc:'Região de maior circunferência da panturrilha.',type:'double',image:'https://i.imgur.com/HarZ9G3.png'}
+];
+
+function openWizard(m){wM=m;wS=0;document.getElementById('wizard-month-label').innerText=`PREENCHENDO: MÊS ${m}`;document.getElementById('wizard-modal').classList.replace('hidden','flex');document.body.style.overflow='hidden';renderW();}
+function closeWizard(){document.getElementById('wizard-modal').classList.replace('flex','hidden');document.body.style.overflow='auto';}
+
+function renderW(){
+  const s=wSteps[wS],c=document.getElementById('wizard-content');
+  c.classList.remove('wizard-enter');void c.offsetWidth;c.classList.add('wizard-enter');
+  const pct=((wS+1)/wSteps.length)*100;
+  document.getElementById('wizard-progress-bar').style.width=`${pct}%`;
+  document.getElementById('wizard-progress-text').innerText=`${wS+1}/${wSteps.length}`;
+  document.getElementById('btn-wizard-prev').disabled=wS===0;
+  const nb=document.getElementById('btn-wizard-next');
+  if(wS===wSteps.length-1){nb.innerHTML='FINALIZAR <i data-lucide="check" class="w-5 h-5"></i>';nb.style.background='#2d7a4f';}
+  else{nb.innerHTML='PRÓXIMO <i data-lucide="chevron-right" class="w-5 h-5"></i>';nb.style.background='var(--verde)';}
+  let h='';
+  if(s.image)h+=`<div class="mb-4 md:mb-6 w-full flex justify-center"><div class="h-40 md:h-56 w-full max-w-[200px] md:max-w-[250px] bg-white rounded-2xl p-3 flex items-center justify-center shadow-sm border border-gray-100"><img src="${s.image}" class="w-full h-full object-contain" alt="${s.title}"></div></div>`;
+  h+=`<div class="text-center mb-6 md:mb-8"><h2 class="text-2xl md:text-4xl font-black mb-2 leading-tight" style="color:var(--preto)">${s.title}</h2><p class="text-gray-500 text-xs md:text-sm max-w-sm mx-auto px-4 leading-relaxed">${s.desc}</p></div>`;
+  if(s.type==='date'){
+    const sv=localStorage.getItem(`date-m${wM}`)||'';
+    let dv='';if(sv){const p=sv.split('/');if(p.length===3)dv=`${p[2]}-${p[1]}-${p[0]}`;}
+    h+=`<div class="w-full max-w-xs"><label class="block text-center font-bold text-gray-400 text-sm mb-3 uppercase tracking-wider">Dia / Mês / Ano</label><input type="date" id="wiz-date" class="date-input" value="${dv}"></div>`;
+  }else if(s.type==='single'){
+    const sv=localStorage.getItem(`${s.id}-m${wM}`)||'';
+    h+=`<div class="w-full max-w-sm"><label class="block text-center font-bold text-gray-400 text-sm mb-3 uppercase tracking-wider">${s.label}</label><input type="text" inputmode="decimal" id="wiz-input-single" class="wizard-input" placeholder="0.0" value="${sv}"></div>`;
+  }else{
+    const sL=localStorage.getItem(`${s.id}-l-m${wM}`)||'',sR=localStorage.getItem(`${s.id}-r-m${wM}`)||'';
+    h+=`<div class="w-full max-w-md grid grid-cols-2 gap-4 md:gap-6"><div><label class="block text-center font-bold text-gray-400 text-xs md:text-sm mb-3 uppercase tracking-wider">Lado Esquerdo</label><input type="text" inputmode="decimal" id="wiz-input-l" class="wizard-input" placeholder="Esq" value="${sL}"></div><div><label class="block text-center font-bold text-gray-400 text-xs md:text-sm mb-3 uppercase tracking-wider">Lado Direito</label><input type="text" inputmode="decimal" id="wiz-input-r" class="wizard-input" placeholder="Dir" value="${sR}"></div></div>`;
+  }
+  c.innerHTML=h;initLucide();
+  setTimeout(()=>{
+    document.querySelectorAll('.wizard-input').forEach(inp=>inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();wizardNext();}}));
+    const fi=document.getElementById(s.type==='single'?'wiz-input-single':s.type==='date'?'wiz-date':'wiz-input-l');
+    if(fi&&window.innerWidth>768)fi.focus();
+  },300);
+}
+
+function saveCurrentStep(){
+  const s=wSteps[wS];
+  if(s.type==='date'){
+    const v=document.getElementById('wiz-date')?document.getElementById('wiz-date').value:'';
+    if(v){const p=v.split('-');const fmt=`${p[2]}/${p[1]}/${p[0]}`;localStorage.setItem(`date-m${wM}`,fmt);const el=document.getElementById(`tbl-date-m${wM}`);if(el)el.textContent=fmt;}
+  }else if(s.type==='single'){
+    const val=document.getElementById('wiz-input-single').value,id=`${s.id}-m${wM}`;
+    localStorage.setItem(id,val);const t=document.querySelector(`[data-id="${id}"]`);if(t)t.value=val;
+  }else{
+    const vL=document.getElementById('wiz-input-l').value,vR=document.getElementById('wiz-input-r').value;
+    const iL=`${s.id}-l-m${wM}`,iR=`${s.id}-r-m${wM}`;
+    localStorage.setItem(iL,vL);localStorage.setItem(iR,vR);
+    [[iL,vL],[iR,vR]].forEach(([id,val])=>{const t=document.querySelector(`[data-id="${id}"]`);if(t)t.value=val;});
+  }
+}
+function wizardNext(){saveCurrentStep();if(wS<wSteps.length-1){wS++;renderW();}else{closeWizard();showToast(`Dados do Mês ${wM} salvos com sucesso!`);}}
+function wizardPrev(){saveCurrentStep();if(wS>0){wS--;renderW();}}
+
+let pwM=1,pwS=0;
+const photoSteps=[
+  {id:'date',title:'Data do Registro',desc:'Informe a data das fotos deste mês.',type:'date'},
+  {id:'front',title:'Foto de Frente',desc:'Postura relaxada, olhando para a câmera.'},
+  {id:'left',title:'Foto de Lado Esquerdo',desc:'Perfil esquerdo, braços ao longo do corpo.'},
+  {id:'back',title:'Foto de Costas',desc:'Cabelo preso, costas para a câmera.'},
+  {id:'right',title:'Foto de Lado Direito',desc:'Perfil direito, braços ao longo do corpo.'},
+];
+
+function openPhotoWizard(m){pwM=m;pwS=0;document.getElementById('photo-wizard-label').innerText=`FOTOS — MÊS ${m}`;document.getElementById('photo-wizard-modal').classList.replace('hidden','flex');document.body.style.overflow='hidden';renderPhotoW();}
+function closePhotoWizard(){document.getElementById('photo-wizard-modal').classList.replace('flex','hidden');document.body.style.overflow='auto';buildPhotoGrid();}
+
+function renderPhotoW(){
+  const s=photoSteps[pwS],c=document.getElementById('photo-wizard-content');
+  c.classList.remove('wizard-enter');void c.offsetWidth;c.classList.add('wizard-enter');
+  document.getElementById('photo-wizard-bar').style.width=`${((pwS+1)/photoSteps.length)*100}%`;
+  document.getElementById('photo-wizard-progress').innerText=`${pwS+1}/${photoSteps.length}`;
+  document.getElementById('btn-photo-prev').disabled=pwS===0;
+  const nb=document.getElementById('btn-photo-next');
+  if(pwS===photoSteps.length-1){nb.innerHTML='FINALIZAR <i data-lucide="check" class="w-5 h-5"></i>';nb.style.background='#2d7a4f';}
+  else{nb.innerHTML='PRÓXIMO <i data-lucide="chevron-right" class="w-5 h-5"></i>';nb.style.background='var(--verde)';}
+  let h=`<div class="text-center mb-6"><h2 class="text-2xl md:text-3xl font-black mb-2" style="color:var(--preto)">${s.title}</h2><p class="text-gray-500 text-xs md:text-sm max-w-sm mx-auto leading-relaxed">${s.desc}</p></div>`;
+  if(s.type==='date'){
+    const sv=localStorage.getItem(`photo-date-m${pwM}`)||'';
+    let dv='';if(sv){const p=sv.split('/');if(p.length===3)dv=`${p[2]}-${p[1]}-${p[0]}`;}
+    h+=`<div class="w-full max-w-xs"><label class="block text-center font-bold text-gray-400 text-xs mb-3 uppercase tracking-widest">Dia / Mês / Ano</label><input type="date" id="pwiz-date" class="date-input" value="${dv}"></div>`;
+  }else{
+    const ex=localStorage.getItem(`photo-${s.id}-m${pwM}`)||'';
+    h+=`<div class="w-full max-w-xs mx-auto"><div style="aspect-ratio:3/4;background:#111;border-radius:16px;overflow:hidden;position:relative;border:2px dashed rgba(0,0,0,.15);" id="preview-slot-${s.id}">${ex?`<img src="${ex}" style="width:100%;height:100%;object-fit:cover;">`:`<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:rgba(255,255,255,.3);"><svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' fill='none' stroke='currentColor' stroke-width='1.5' viewBox='0 0 24 24'><path d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/><circle cx='12' cy='13' r='4'/></svg><span style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Toque para fotografar</span></div>`}</div><input type="file" accept="image/*" capture="environment" id="photo-input-${s.id}" style="display:none" onchange="handlePhotoCapture('${s.id}')"><button onclick="document.getElementById('photo-input-${s.id}').click()" class="mt-4 w-full py-4 rounded-xl font-bold text-white flex justify-center items-center gap-2 transition hover:opacity-90" style="background:var(--verde)"><svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24'><path d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/><circle cx='12' cy='13' r='4'/></svg>${ex?'Trocar Foto':'Abrir Câmera'}</button></div>`;
+  }
+  c.innerHTML=h;initLucide();
+}
+
+function handlePhotoCapture(slotId){
+  const input=document.getElementById(`photo-input-${slotId}`);
+  if(!input||!input.files||!input.files[0])return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const img=new Image();
+    img.onload=function(){
+      const canvas=document.createElement('canvas');
+      const MAX=800;let w=img.width,h=img.height;
+      if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const compressed=canvas.toDataURL('image/jpeg',.7);
+      localStorage.setItem(`photo-${slotId}-m${pwM}`,compressed);
+      const slot=document.getElementById(`preview-slot-${slotId}`);
+      if(slot)slot.innerHTML=`<img src="${compressed}" style="width:100%;height:100%;object-fit:cover;">`;
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function savePhotoW(){
+  if(photoSteps[pwS].type==='date'){
+    const v=document.getElementById('pwiz-date')?document.getElementById('pwiz-date').value:'';
+    if(v){const p=v.split('-');localStorage.setItem(`photo-date-m${pwM}`,`${p[2]}/${p[1]}/${p[0]}`);}
+  }
+}
+function photoWizardNext(){savePhotoW();if(pwS<photoSteps.length-1){pwS++;renderPhotoW();}else{closePhotoWizard();showToast(`Fotos do Mês ${pwM} salvas!`);}}
+function photoWizardPrev(){savePhotoW();if(pwS>0){pwS--;renderPhotoW();}}
+
+function buildPhotoGrid(){
+  const grid=document.getElementById('photo-months-grid');
+  if(!grid)return;
+  const labels=['Frente','Esq','Costas','Dir'],keys=['front','left','back','right'];
+  let html='';
+  for(let i=1;i<=12;i++){
+    const date=localStorage.getItem(`photo-date-m${i}`)||'';
+    html+=`<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div><span style="font-size:12px;font-weight:800;color:white;letter-spacing:.08em;">MÊS ${i}</span>${date?`<div style="font-size:10px;color:#8aba9e;margin-top:2px;">${date}</div>`:''}</div>
+        <button onclick="openPhotoWizard(${i})" style="background:#4A7C62;color:white;border:none;border-radius:8px;padding:7px 12px;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer;display:flex;align-items:center;gap:6px;">
+            <svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24'><path d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/><circle cx='12' cy='13' r='4'/></svg> PREENCHER
+          </button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+        ${keys.map((k,idx)=>{const img=localStorage.getItem(`photo-${k}-m${i}`)||'';return `<div style="aspect-ratio:3/4;background:#111;border-radius:8px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.08);">${img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`:`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.2);font-size:9px;font-weight:700;text-transform:uppercase;">${labels[idx]}</div>`}</div>`;}).join('')}
+      </div>
+      <div style="margin-top:10px;text-align:right;">
+        <a href="https://wa.me/5573991040064" target="_blank" style="color:rgba(255,255,255,.5);font-size:10px;font-weight:700;letter-spacing:.06em;text-decoration:none;cursor:pointer;transition:color .2s;" onmouseover="this.style.color='#4A7C62'" onmouseout="this.style.color='rgba(255,255,255,.5)'">Enviar para a Profª</a>
+      </div>
+    </div>`;
+  }
+  grid.innerHTML=html;
+}
+
+function copyMonthData(monthIndex){
+  const name=localStorage.getItem('joyce_name')||'Aluna';
+  const date=localStorage.getItem(`date-m${monthIndex}`)||'';
+  let report=`📊 *AVALIAÇÃO — MÊS ${monthIndex}*\n👤 ${name}\n👩‍🏫 Profª Joyce Neres\n${date?'📅 '+date+'\n':''}\n`;
+  const groups={};let hasData=false;
+  document.querySelectorAll('.measure-input').forEach(input=>{
+    const id=input.dataset.id,parts=id.split('-'),mp=parts[parts.length-1];
+    if(mp===`m${monthIndex}`){
+      const label=input.dataset.label,val=input.value||'∅';
+      if(input.value)hasData=true;
+      if(label.includes('Esq')||label.includes('Dir')){const base=label.replace(' Esq','').replace(' Dir','');if(!groups[base])groups[base]={e:'∅',d:'∅'};if(label.includes('Esq'))groups[base].e=val;else groups[base].d=val;}
+      else report+=`*${label}:* ${val}\n`;
+    }
+  });
+  for(const[name2,measures]of Object.entries(groups))report+=`*${name2}:* ${measures.e} | ${measures.d}\n`;
+  report+=`\nSua vez de começar e permanecer! 💚\n@joyceneresef`;
+  if(!hasData){showToast(`Nenhum dado preenchido no Mês ${monthIndex}.`);return;}
+  const el=document.createElement('textarea');el.value=report;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);
+  showToast(`Relatório do Mês ${monthIndex} copiado!`);
+}
+
+function showToast(msg){const t=document.getElementById('toast');t.innerText=msg;t.className='show';setTimeout(()=>{t.className=t.className.replace('show','');},3000);}
+</script>
+</body>
+</html>
