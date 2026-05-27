@@ -37,6 +37,12 @@ th.sticky-col{z-index:30;box-shadow:4px 0 10px -2px rgba(0,0,0,0.3);}
 .date-input{font-size:1.1rem;text-align:center;font-weight:700;color:var(--preto);background:#f9fafb;border:2px solid #e5e7eb;border-radius:1rem;padding:.85rem 1rem;width:100%;transition:all .25s;}
 .date-input:focus{outline:none;border-color:var(--verde);background:#e8f5ee;box-shadow:0 0 0 4px rgba(74,124,98,.12);}
 .month-date-label{font-size:10px;color:var(--verde-light);font-weight:700;text-align:center;margin-top:2px;min-height:14px;}
+/* CORREÇÃO 1 — Print button mobile circular */
+#print-btn{width:44px;height:44px;padding:0;border-radius:50%;}
+@media(min-width:1024px){#print-btn{width:auto;height:auto;padding:8px 20px;border-radius:9999px;}}
+/* CORREÇÃO 3 — Photo carousel scrollbar hide */
+#photo-months-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:16px;padding:0 16px 16px 16px;}
+#photo-months-grid::-webkit-scrollbar{display:none;}
 @media print{
 @page{size:landscape;margin:10mm;}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;text-shadow:none!important;box-shadow:none!important;}
@@ -49,7 +55,7 @@ header{position:static!important;height:auto!important;padding:15px 0!important;
 #main-table th.sticky-col,#main-table td.sticky-col{position:static!important;width:70px!important;min-width:70px!important;box-shadow:none!important;background-color:#f3f4f6!important;}
 .measure-input{font-size:8px!important;padding:1px!important;border:none!important;color:black!important;}
 .grid>div,section,tr,li{page-break-inside:avoid!important;break-inside:avoid!important;}
-#photo-months-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:8px!important;}
+#photo-months-grid{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:8px!important;overflow:visible!important;}
 }
 </style>
 </head>
@@ -108,18 +114,31 @@ header{position:static!important;height:auto!important;padding:15px 0!important;
   </div>
 </div>
 
-<!-- HEADER -->
+<!-- HEADER — CORREÇÃO 1 -->
 <header class="text-white shadow-lg sticky top-0 z-50 transition-all duration-300" id="main-header" style="background:var(--preto)">
-  <div class="container mx-auto px-4 py-4 flex justify-between items-center h-24">
-    <nav style="display:flex;gap:24px;font-weight:700;font-size:11px;letter-spacing:.1em;color:#d1d5db;" class="no-print">
-      <a href="#intro" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">INÍCIO</a>
-      <a href="#dica" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">DICA DA PROFª</a>
-      <a href="#medidas" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">MEDIDAS</a>
-      <a href="#tabela" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">TABELA</a>
-      <a href="#fotos-ev" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">FOTOS</a>
-    </nav>
-    <button id="mobile-menu-btn" class="lg:hidden z-50 p-2 text-white focus:outline-none hover:bg-white/10 rounded-full transition" aria-label="Abrir Menu"><i data-lucide="menu" class="w-8 h-8"></i></button>
-    <button onclick="window.print()" class="text-white px-5 py-2 rounded-full font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg no-print" style="background:var(--verde)" aria-label="Imprimir"><i data-lucide="printer" class="w-5 h-5"></i> <span>IMPRIMIR</span></button>
+  <div class="container mx-auto px-4 py-4 flex justify-between items-center relative h-24">
+    <!-- Esquerda: hamburger -->
+    <div class="flex items-center">
+      <button id="mobile-menu-btn" class="lg:hidden z-50 p-2 text-white focus:outline-none hover:bg-white/10 rounded-full transition" aria-label="Abrir Menu"><i data-lucide="menu" class="w-8 h-8"></i></button>
+      <!-- Nav desktop apenas -->
+      <nav class="hidden lg:flex no-print" style="gap:24px;font-weight:700;font-size:11px;letter-spacing:.1em;color:#d1d5db;">
+        <a href="#intro" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">INÍCIO</a>
+        <a href="#dica" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">DICA DA PROFª</a>
+        <a href="#medidas" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">MEDIDAS</a>
+        <a href="#tabela" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">TABELA</a>
+        <a href="#fotos-ev" style="color:inherit;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#d1d5db'">FOTOS</a>
+      </nav>
+    </div>
+    <!-- Centro: JN mobile / Profª Joyce Neres desktop -->
+    <a href="#" class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group">
+      <span class="lg:hidden font-black text-3xl group-hover:scale-105 transition duration-300" style="font-family:'Playfair Display',serif;font-style:italic;color:var(--creme)">JN</span>
+      <span class="hidden lg:block font-black text-xl md:text-2xl group-hover:scale-105 transition duration-300" style="font-family:'Playfair Display',serif;font-style:italic;color:var(--creme)">Profª Joyce Neres</span>
+    </a>
+    <!-- Direita: botão imprimir circular no mobile -->
+    <button id="print-btn" onclick="window.print()" class="no-print text-white flex items-center justify-center shadow-lg transition" style="background:var(--verde)" aria-label="Imprimir">
+      <i data-lucide="printer" class="w-5 h-5"></i>
+      <span class="hidden lg:inline font-bold text-xs ml-2">IMPRIMIR</span>
+    </button>
   </div>
 </header>
 
@@ -289,8 +308,9 @@ header{position:static!important;height:auto!important;padding:15px 0!important;
       </div>
     </div>
     <h3 class="text-xl font-black mb-2 uppercase tracking-widest text-center" style="color:var(--creme)">Seus Registros Mensais</h3>
-    <p class="text-center text-sm mb-8 text-gray-400">Clique em "Preencher" para adicionar suas fotos do mês.</p>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="photo-months-grid"></div>
+    <p class="text-center text-sm mb-4 text-gray-400">Clique em "Preencher" para adicionar suas fotos do mês. Arraste para navegar entre os meses.</p>
+    <!-- CORREÇÃO 3 — Carrossel horizontal, sem "Enviar para a Profª", com botão WhatsApp -->
+    <div id="photo-months-grid"></div>
   </div>
 </section>
 
@@ -336,19 +356,20 @@ function closeConfirmModal(){document.getElementById('confirm-modal').classList.
 function executeClearData(){localStorage.clear();location.reload();}
 
 let wM=1,wS=0;
+// CORREÇÃO 2 — Imagens corrigidas para as da Joyce
 const wSteps=[
   {id:'date',title:'Data do Registro',desc:'Informe a data desta avaliação.',type:'date'},
   {id:'peso',title:'Peso Corporal',desc:'Sua pesagem atual em jejum, se possível.',type:'single',label:'Peso (kg)',image:null},
-  {id:'ant',title:'Antebraço',desc:'Região de maior circunferência do antebraço.',type:'double',image:'https://i.imgur.com/9j5tS6G.png'},
-  {id:'brlx',title:'Braço Relaxado',desc:'Região de maior circunferência do braço relaxado.',type:'double',image:'https://i.imgur.com/JXNNlV0.png'},
-  {id:'bcon',title:'Braço Contraído',desc:'Região de maior circunferência do braço contraído.',type:'double',image:'https://i.imgur.com/oEN8KqT.png'},
-  {id:'omb',title:'Ombro',desc:'Passe a fita métrica ao redor do corpo entre os pontos mais largos de cada ombro.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/ZR5a1Fg.png'},
-  {id:'tor',title:'Tórax',desc:'Debaixo das axilas. Homens: na linha dos mamilos. Mulheres: 2 dedos acima.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/GVMiOPF.png'},
-  {id:'cin',title:'Cintura',desc:'Entre a última costela e o osso ilíaco, geralmente 2 dedos acima do umbigo.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/YcFu0nE.png'},
-  {id:'abd',title:'Abdômen',desc:'Passe a fita métrica horizontalmente por cima do seu umbigo.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/eVdePfT.png'},
-  {id:'qua',title:'Quadril',desc:'Posicione a fita na região mais larga, geralmente no meio do glúteo.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/eYceyFN.png'},
-  {id:'cox',title:'Coxa',desc:'Região de maior circunferência da coxa.',type:'double',image:'https://i.imgur.com/4SO5yjE.png'},
-  {id:'pan',title:'Panturrilha',desc:'Região de maior circunferência da panturrilha.',type:'double',image:'https://i.imgur.com/HarZ9G3.png'}
+  {id:'ant',title:'Antebraço',desc:'Região de maior circunferência do antebraço.',type:'double',image:'https://i.imgur.com/PVGibkV.png'},
+  {id:'brlx',title:'Braço Relaxado',desc:'Região de maior circunferência do braço relaxado.',type:'double',image:'https://i.imgur.com/FFkhGNL.png'},
+  {id:'bcon',title:'Braço Contraído',desc:'Região de maior circunferência do braço contraído.',type:'double',image:'https://i.imgur.com/F51gwV3.png'},
+  {id:'omb',title:'Ombro',desc:'Passe a fita métrica ao redor do corpo entre os pontos mais largos de cada ombro.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/CejSb1G.png'},
+  {id:'tor',title:'Tórax',desc:'Debaixo das axilas. Homens: na linha dos mamilos. Mulheres: 2 dedos acima.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/Kp2mnAA.png'},
+  {id:'cin',title:'Cintura',desc:'Entre a última costela e o osso ilíaco, geralmente 2 dedos acima do umbigo.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/JPfafKn.png'},
+  {id:'abd',title:'Abdômen',desc:'Passe a fita métrica horizontalmente por cima do seu umbigo.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/5ebiL3D.png'},
+  {id:'qua',title:'Quadril',desc:'Posicione a fita na região mais larga, geralmente no meio do glúteo.',type:'single',label:'Medida (cm)',image:'https://i.imgur.com/8W1vija.png'},
+  {id:'cox',title:'Coxa',desc:'Região de maior circunferência da coxa.',type:'double',image:'https://i.imgur.com/yv1mnPu.png'},
+  {id:'pan',title:'Panturrilha',desc:'Região de maior circunferência da panturrilha.',type:'double',image:'https://i.imgur.com/4IFrDJR.png'}
 ];
 
 function openWizard(m){wM=m;wS=0;document.getElementById('wizard-month-label').innerText=`PREENCHENDO: MÊS ${m}`;document.getElementById('wizard-modal').classList.replace('hidden','flex');document.body.style.overflow='hidden';renderW();}
@@ -468,6 +489,7 @@ function savePhotoW(){
 function photoWizardNext(){savePhotoW();if(pwS<photoSteps.length-1){pwS++;renderPhotoW();}else{closePhotoWizard();showToast(`Fotos do Mês ${pwM} salvas!`);}}
 function photoWizardPrev(){savePhotoW();if(pwS>0){pwS--;renderPhotoW();}}
 
+// CORREÇÃO 3 — buildPhotoGrid: carrossel horizontal + sem "Enviar para Profª" + botão WhatsApp
 function buildPhotoGrid(){
   const grid=document.getElementById('photo-months-grid');
   if(!grid)return;
@@ -475,22 +497,43 @@ function buildPhotoGrid(){
   let html='';
   for(let i=1;i<=12;i++){
     const date=localStorage.getItem(`photo-date-m${i}`)||'';
-    html+=`<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;">
+    html+=`<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;min-width:min(calc(100vw - 96px), 420px);scroll-snap-align:start;flex-shrink:0;overflow:hidden;box-sizing:border-box;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <div><span style="font-size:12px;font-weight:800;color:white;letter-spacing:.08em;">MÊS ${i}</span>${date?`<div style="font-size:10px;color:#8aba9e;margin-top:2px;">${date}</div>`:''}</div>
         <button onclick="openPhotoWizard(${i})" style="background:#4A7C62;color:white;border:none;border-radius:8px;padding:7px 12px;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer;display:flex;align-items:center;gap:6px;">
-            <svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24'><path d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/><circle cx='12' cy='13' r='4'/></svg> PREENCHER
-          </button>
+          <svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24'><path d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/><circle cx='12' cy='13' r='4'/></svg> PREENCHER
+        </button>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
-        ${keys.map((k,idx)=>{const img=localStorage.getItem(`photo-${k}-m${i}`)||'';return `<div style="aspect-ratio:3/4;background:#111;border-radius:8px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.08);">${img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`:`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.2);font-size:9px;font-weight:700;text-transform:uppercase;">${labels[idx]}</div>`}</div>`;}).join('')}
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:120px;overflow:hidden;">
+        ${keys.map((k,idx)=>{const img=localStorage.getItem(`photo-${k}-m${i}`)||'';return `<div style="aspect-ratio:3/4;background:#111;border-radius:8px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.08);max-height:120px;">${img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`:`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.2);font-size:9px;font-weight:700;text-transform:uppercase;">${labels[idx]}</div>`}</div>`;}).join('')}
       </div>
-      <div style="margin-top:10px;text-align:right;">
-        <a href="https://wa.me/5573991040064" target="_blank" style="color:rgba(255,255,255,.5);font-size:10px;font-weight:700;letter-spacing:.06em;text-decoration:none;cursor:pointer;transition:color .2s;" onmouseover="this.style.color='#4A7C62'" onmouseout="this.style.color='rgba(255,255,255,.5)'">Enviar para a Profª</a>
-      </div>
+      <button onclick="shareMonthWhatsApp(${i})" onmouseover="this.style.color='#4A7C62'" onmouseout="this.style.color='white'" ontouchstart="this.style.color='#4A7C62'" ontouchend="this.style.color='white'" style="background:transparent;color:white;border:none;border-radius:8px;padding:10px 12px;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:12px;transition:color .2s;">
+        Enviar para minha Profª
+      </button>
     </div>`;
   }
   grid.innerHTML=html;
+}
+
+// CORREÇÃO 3 — Função compartilhar WhatsApp com medidas do mês
+function shareMonthWhatsApp(monthIndex){
+  const name=localStorage.getItem('joyce_name')||'Aluna';
+  const date=localStorage.getItem(`date-m${monthIndex}`)||'';
+  let report=`📊 *AVALIAÇÃO — MÊS ${monthIndex}*\n👤 ${name}\n👩‍🏫 Profª Joyce Neres\n${date?'📅 '+date+'\n':''}\n`;
+  const groups={};let hasData=false;
+  document.querySelectorAll('.measure-input').forEach(input=>{
+    const id=input.dataset.id,parts=id.split('-'),mp=parts[parts.length-1];
+    if(mp===`m${monthIndex}`){
+      const label=input.dataset.label,val=input.value||'∅';
+      if(input.value)hasData=true;
+      if(label.includes('Esq')||label.includes('Dir')){const base=label.replace(' Esq','').replace(' Dir','');if(!groups[base])groups[base]={e:'∅',d:'∅'};if(label.includes('Esq'))groups[base].e=val;else groups[base].d=val;}
+      else report+=`*${label}:* ${val}\n`;
+    }
+  });
+  for(const[name2,measures]of Object.entries(groups))report+=`*${name2}:* ${measures.e} | ${measures.d}\n`;
+  report+=`\nTe aguardo no próximo mês, vamos juntas! 💚\n@joyceneresef`;
+  if(!hasData){showToast(`Nenhum dado preenchido no Mês ${monthIndex}.`);return;}
+  window.open(`https://wa.me/5573991040064?text=${encodeURIComponent(report)}`,'_blank');
 }
 
 function copyMonthData(monthIndex){
@@ -515,6 +558,17 @@ function copyMonthData(monthIndex){
 }
 
 function showToast(msg){const t=document.getElementById('toast');t.innerText=msg;t.className='show';setTimeout(()=>{t.className=t.className.replace('show','');},3000);}
+
+(function(){
+  const el=document.getElementById('photo-months-grid');
+  if(!el)return;
+  let isDown=false,startX,scrollLeft;
+  el.style.cursor='grab';
+  el.addEventListener('mousedown',e=>{isDown=true;el.style.cursor='grabbing';startX=e.pageX-el.offsetLeft;scrollLeft=el.scrollLeft;});
+  el.addEventListener('mouseleave',()=>{isDown=false;el.style.cursor='grab';});
+  el.addEventListener('mouseup',()=>{isDown=false;el.style.cursor='grab';});
+  el.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-el.offsetLeft;el.scrollLeft=scrollLeft-(x-startX);});
+})();
 </script>
 </body>
 </html>
