@@ -43,11 +43,22 @@ th.sticky-col{z-index:30;box-shadow:4px 0 10px -2px rgba(0,0,0,0.3);}
 /* CORREÇÃO 3 — Photo carousel scrollbar hide */
 #photo-months-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:16px;padding:0 16px 16px 16px;}
 #photo-months-grid::-webkit-scrollbar{display:none;}
+/* CORREÇÃO — Fotos fixas no mobile (não expandem ao preencher) */
+.photo-month-card{min-width:min(calc(100vw - 96px),420px);scroll-snap-align:start;flex-shrink:0;overflow:hidden;box-sizing:border-box;}
+.photo-slots-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;width:100%;}
+.photo-slot{aspect-ratio:3/4;min-width:0;min-height:0;max-height:100px;width:100%;background:#111;border-radius:8px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.08);}
+.photo-slot img{width:100%;height:100%;object-fit:cover;display:block;}
+.photo-wizard-preview{aspect-ratio:3/4;width:100%;max-width:220px;max-height:min(50vh,320px);margin:0 auto;background:#111;border-radius:16px;overflow:hidden;position:relative;border:2px dashed rgba(0,0,0,.15);}
+.photo-wizard-preview img{width:100%;height:100%;object-fit:cover;display:block;}
+/* Acesso restrito */
+#access-gate{position:fixed;inset:0;z-index:200;background:linear-gradient(160deg,#18181B 0%,#0a0a0a 100%);display:flex;align-items:center;justify-content:center;padding:24px;}
+#access-gate.hidden{display:none;}
+#app-content.locked{filter:blur(12px);pointer-events:none;user-select:none;}
 @media print{
 @page{size:landscape;margin:10mm;}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;text-shadow:none!important;box-shadow:none!important;}
 body{background-color:white!important;color:black!important;margin:0;padding:0;}
-.no-print,#mobile-menu-btn,#mobile-menu,header nav,#clear-data-btn,.animate-bounce,.copy-btn,.scroll-hint-box,#wizard-modal,#photo-wizard-modal,#confirm-modal{display:none!important;}
+.no-print,#mobile-menu-btn,#mobile-menu,header nav,#clear-data-btn,.animate-bounce,.copy-btn,.scroll-hint-box,#wizard-modal,#photo-wizard-modal,#confirm-modal,#access-gate{display:none!important;}
 header{position:static!important;height:auto!important;padding:15px 0!important;background-color:var(--preto)!important;color:white!important;border-bottom:2px solid var(--verde)!important;}
 .table-container{border:1px solid #e5e7eb!important;overflow:visible!important;}
 #main-table{min-width:100%!important;width:100%!important;table-layout:fixed!important;}
@@ -60,6 +71,21 @@ header{position:static!important;height:auto!important;padding:15px 0!important;
 </style>
 </head>
 <body class="overflow-x-hidden" style="background-color:var(--bg);color:var(--preto);">
+
+<!-- PORTÃO DE ACESSO — só alunas autorizadas -->
+<div id="access-gate">
+  <div class="bg-white p-8 rounded-3xl max-w-sm w-full shadow-2xl modal-enter border border-gray-100 text-center">
+    <div class="mb-4"><span class="font-black text-4xl" style="font-family:'Playfair Display',serif;font-style:italic;color:var(--preto)">JN</span></div>
+    <h2 class="text-xl font-black mb-2" style="color:var(--preto)">Área exclusiva para alunas</h2>
+    <p class="text-gray-500 text-sm mb-6 leading-relaxed">Digite o código de acesso que a Profª Joyce enviou para você.</p>
+    <input type="text" id="access-code-input" placeholder="Seu código de acesso" maxlength="80" autocomplete="off" class="w-full text-center font-bold px-5 py-4 rounded-xl border-2 outline-none transition mb-4" style="border-color:#e5e7eb;" onfocus="this.style.borderColor='var(--verde)'" onblur="this.style.borderColor='#e5e7eb'">
+    <button id="access-submit-btn" onclick="verifyAccess()" class="w-full py-4 rounded-xl font-black text-white transition shadow-lg" style="background:var(--verde)">ENTRAR</button>
+    <p id="access-error" class="text-red-500 text-xs mt-4 hidden font-semibold">Código inválido ou acesso não autorizado.</p>
+    <p class="text-gray-400 text-xs mt-6 leading-relaxed">Não tem código? Entre em contato com a Profª Joyce pelo Instagram.</p>
+  </div>
+</div>
+
+<div id="app-content" class="locked">
 
 <div id="toast">Ação realizada!</div>
 
@@ -318,14 +344,79 @@ header{position:static!important;height:auto!important;padding:15px 0!important;
 <footer class="text-white text-center py-12 md:py-20 border-t-4" style="background:#000;border-color:var(--verde)">
   <div class="container mx-auto px-4">
     <h2 class="text-3xl md:text-6xl font-black leading-tight mb-8 serif italic" style="font-family:'Playfair Display',serif;font-style:italic;color:var(--creme)">Sua vez de Começar<br>e Permanecer</h2>
-    <a href="https://www.instagram.com/joyceneresef/" target="_blank" class="inline-flex items-center text-white font-bold py-4 px-10 rounded-full transition-all transform hover:scale-105 mb-6 text-sm md:text-base no-print" style="background:var(--verde)"><i data-lucide="instagram" class="w-5 h-5 mr-2"></i>ACOMPANHE NO INSTAGRAM</a>
-    <p class="text-sm max-w-xl mx-auto mt-2 mb-16" style="color:rgba(240,237,230,.4)">O suporte para quem decidiu se escolher novamente e a não se deixar para depois.</p>
+    <a href="https://www.instagram.com/joyceneresef/" target="_blank" class="inline-flex items-center text-white font-bold py-4 px-10 rounded-full transition-all transform hover:scale-105 mb-10 text-sm md:text-base no-print" style="background:var(--verde)"><i data-lucide="instagram" class="w-5 h-5 mr-2"></i>ACOMPANHE NO INSTAGRAM</a>
     <div class="font-black text-4xl md:text-7xl tracking-tighter mb-8 select-none" style="color:rgba(255,255,255,.07)">#VAMOSJUNTAS</div>
     <p class="text-xs md:text-sm" style="color:rgba(240,237,230,.15)">© 2026 PROFª JOYCE NERES</p>
   </div>
 </footer>
 
+</div><!-- /app-content -->
+
 <script>
+// ═══ CONTROLE DE ACESSO ═══
+// Altere a URL abaixo para gerenciar alunas SEM editar este arquivo.
+// Opções: students.json no mesmo site, Google Sheets, JSONBin, Firebase Storage, etc.
+const ACCESS_LIST_URL = 'students.json';
+const ACCESS_ENABLED = true; // false = desativa o bloqueio temporariamente
+
+let allowedCodes = [];
+
+function normalizeCode(c){return (c||'').trim().toLowerCase();}
+
+async function loadAllowedCodes(){
+  if(!ACCESS_ENABLED)return ['__demo__'];
+  try{
+    const res=await fetch(ACCESS_LIST_URL+'?t='+Date.now(),{cache:'no-store'});
+    if(!res.ok)throw new Error('fetch failed');
+    const data=await res.json();
+    if(Array.isArray(data))return data.map(normalizeCode).filter(Boolean);
+    if(data.allowed&&Array.isArray(data.allowed))return data.allowed.map(normalizeCode).filter(Boolean);
+    if(data.alunas&&Array.isArray(data.alunas))return data.alunas.map(normalizeCode).filter(Boolean);
+    return [];
+  }catch(e){
+    console.warn('Não foi possível carregar lista de acesso:',e);
+    return [];
+  }
+}
+
+function grantAccess(code){
+  sessionStorage.setItem('joyce_access_code',normalizeCode(code));
+  document.getElementById('access-gate').classList.add('hidden');
+  document.getElementById('app-content').classList.remove('locked');
+  document.body.style.overflow='auto';
+}
+
+function denyAccess(){
+  sessionStorage.removeItem('joyce_access_code');
+  document.getElementById('access-gate').classList.remove('hidden');
+  document.getElementById('app-content').classList.add('locked');
+  document.body.style.overflow='hidden';
+}
+
+async function initAccess(){
+  if(!ACCESS_ENABLED){grantAccess('');return;}
+  allowedCodes=await loadAllowedCodes();
+  const saved=sessionStorage.getItem('joyce_access_code');
+  if(saved&&allowedCodes.includes(normalizeCode(saved))){grantAccess(saved);return;}
+  denyAccess();
+}
+
+async function verifyAccess(){
+  const input=document.getElementById('access-code-input');
+  const err=document.getElementById('access-error');
+  const code=normalizeCode(input.value);
+  if(!code){err.textContent='Digite seu código de acesso.';err.classList.remove('hidden');return;}
+  if(!allowedCodes.length)allowedCodes=await loadAllowedCodes();
+  if(allowedCodes.includes(code)){err.classList.add('hidden');grantAccess(code);}
+  else{err.textContent='Código inválido ou acesso não autorizado.';err.classList.remove('hidden');}
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  initAccess();
+  const ai=document.getElementById('access-code-input');
+  if(ai)ai.addEventListener('keydown',e=>{if(e.key==='Enter')verifyAccess();});
+});
+
 function initLucide(){if(typeof lucide!=='undefined'){lucide.createIcons();}else{setTimeout(initLucide,100);}}
 initLucide();
 
@@ -453,7 +544,7 @@ function renderPhotoW(){
     h+=`<div class="w-full max-w-xs"><label class="block text-center font-bold text-gray-400 text-xs mb-3 uppercase tracking-widest">Dia / Mês / Ano</label><input type="date" id="pwiz-date" class="date-input" value="${dv}"></div>`;
   }else{
     const ex=localStorage.getItem(`photo-${s.id}-m${pwM}`)||'';
-    h+=`<div class="w-full max-w-xs mx-auto"><div style="aspect-ratio:3/4;background:#111;border-radius:16px;overflow:hidden;position:relative;border:2px dashed rgba(0,0,0,.15);" id="preview-slot-${s.id}">${ex?`<img src="${ex}" style="width:100%;height:100%;object-fit:cover;">`:`<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:rgba(255,255,255,.3);"><svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' fill='none' stroke='currentColor' stroke-width='1.5' viewBox='0 0 24 24'><path d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/><circle cx='12' cy='13' r='4'/></svg><span style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Toque para fotografar</span></div>`}</div><input type="file" accept="image/*" capture="environment" id="photo-input-${s.id}" style="display:none" onchange="handlePhotoCapture('${s.id}')"><button onclick="document.getElementById('photo-input-${s.id}').click()" class="mt-4 w-full py-4 rounded-xl font-bold text-white flex justify-center items-center gap-2 transition hover:opacity-90" style="background:var(--verde)"><svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24'><path d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/><circle cx='12' cy='13' r='4'/></svg>${ex?'Trocar Foto':'Abrir Câmera'}</button></div>`;
+    h+=`<div class="w-full max-w-xs mx-auto"><div class="photo-wizard-preview" id="preview-slot-${s.id}">${ex?`<img src="${ex}">`:`<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:rgba(255,255,255,.3);"><svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' fill='none' stroke='currentColor' stroke-width='1.5' viewBox='0 0 24 24'><path d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/><circle cx='12' cy='13' r='4'/></svg><span style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Toque para fotografar</span></div>`}</div><input type="file" accept="image/*" capture="environment" id="photo-input-${s.id}" style="display:none" onchange="handlePhotoCapture('${s.id}')"><button onclick="document.getElementById('photo-input-${s.id}').click()" class="mt-4 w-full py-4 rounded-xl font-bold text-white flex justify-center items-center gap-2 transition hover:opacity-90" style="background:var(--verde)"><svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24'><path d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/><circle cx='12' cy='13' r='4'/></svg>${ex?'Trocar Foto':'Abrir Câmera'}</button></div>`;
   }
   c.innerHTML=h;initLucide();
 }
@@ -473,7 +564,7 @@ function handlePhotoCapture(slotId){
       const compressed=canvas.toDataURL('image/jpeg',.7);
       localStorage.setItem(`photo-${slotId}-m${pwM}`,compressed);
       const slot=document.getElementById(`preview-slot-${slotId}`);
-      if(slot)slot.innerHTML=`<img src="${compressed}" style="width:100%;height:100%;object-fit:cover;">`;
+      if(slot)slot.innerHTML=`<img src="${compressed}">`;
     };
     img.src=e.target.result;
   };
@@ -497,15 +588,15 @@ function buildPhotoGrid(){
   let html='';
   for(let i=1;i<=12;i++){
     const date=localStorage.getItem(`photo-date-m${i}`)||'';
-    html+=`<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;min-width:min(calc(100vw - 96px), 420px);scroll-snap-align:start;flex-shrink:0;overflow:hidden;box-sizing:border-box;">
+    html+=`<div class="photo-month-card" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <div><span style="font-size:12px;font-weight:800;color:white;letter-spacing:.08em;">MÊS ${i}</span>${date?`<div style="font-size:10px;color:#8aba9e;margin-top:2px;">${date}</div>`:''}</div>
         <button onclick="openPhotoWizard(${i})" style="background:#4A7C62;color:white;border:none;border-radius:8px;padding:7px 12px;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer;display:flex;align-items:center;gap:6px;">
           <svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24'><path d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/><circle cx='12' cy='13' r='4'/></svg> PREENCHER
         </button>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
-        ${keys.map((k,idx)=>{const img=localStorage.getItem(`photo-${k}-m${i}`)||'';return `<div style="height:100px;background:#111;border-radius:8px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.08);">${img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`:`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.2);font-size:9px;font-weight:700;text-transform:uppercase;">${labels[idx]}</div>`}</div>`;}).join('')}
+      <div class="photo-slots-grid">
+        ${keys.map((k,idx)=>{const img=localStorage.getItem(`photo-${k}-m${i}`)||'';return `<div class="photo-slot">${img?`<img src="${img}" loading="lazy">`:`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.2);font-size:9px;font-weight:700;text-transform:uppercase;">${labels[idx]}</div>`}</div>`;}).join('')}
       </div>
       <button onclick="shareMonthWhatsApp(${i})" onmouseover="this.style.color='#4A7C62'" onmouseout="this.style.color='white'" ontouchstart="this.style.color='#4A7C62'" ontouchend="this.style.color='white'" style="background:transparent;color:white;border:none;border-radius:8px;padding:10px 12px;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:12px;transition:color .2s;">
         Enviar para minha Profª
