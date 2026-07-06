@@ -607,10 +607,6 @@ function buildPhotoGrid(){
 }
 
 // CORREÇÃO 3 — Função compartilhar WhatsApp com medidas + fotos do mês
-function buildClosingLine(){
-  return `\nTe aguardo no próximo mês, vamos juntas ! 💚\n@joyceneresef`;
-}
-
 function getMeasureVal(monthIndex,id){
   const inp=document.querySelector(`[data-id="${id}"]`);
   return inp&&inp.value?inp.value:null;
@@ -641,17 +637,15 @@ function getMonthMeasureLines(monthIndex){
   return lines;
 }
 
-function buildMonthReport(monthIndex,withPhotos=false){
+function buildMonthReport(monthIndex){
   const name=localStorage.getItem('joyce_name')||'Aluna';
-  const date=localStorage.getItem(`date-m${monthIndex}`)||'';
-  const photoDate=localStorage.getItem(`photo-date-m${monthIndex}`)||'';
-  let report=`📊 *AVALIAÇÃO — MÊS ${monthIndex}*\n👩‍🏫 Profª Joyce Neres\n👤 ${name}\n`;
-  if(date)report+=`📅 Medidas: ${date}\n`;
-  if(photoDate&&photoDate!==date)report+=`📸 Fotos: ${photoDate}\n`;
+  const date=localStorage.getItem(`date-m${monthIndex}`)||localStorage.getItem(`photo-date-m${monthIndex}`)||'';
+  let report=`📊 *AVALIAÇÃO — MÊS ${monthIndex}*\n\n`;
+  report+=`👩‍🏫 Profª Joyce Neres\n👤 ${name}\n`;
+  if(date)report+=`📅 ${date}\n`;
   report+='\n';
   getMonthMeasureLines(monthIndex).forEach(({label,val})=>{report+=`*${label}:* ${val}\n`;});
-  if(withPhotos)report+=`\n*Minhas fotos*\n`;
-  report+=buildClosingLine();
+  report+=`\nTe aguardo no próximo mês, vamos juntas! 💚\n@joyceneresef`;
   return report;
 }
 
@@ -755,24 +749,26 @@ async function shareMonthWhatsApp(monthIndex){
   const hasPhotos=monthHasPhotos(monthIndex);
   if(!hasData&&!hasPhotos){showToast(`Nenhum dado ou foto no Mês ${monthIndex}.`);return;}
   showToast('Preparando envio...');
-  const report=buildMonthReport(monthIndex,hasPhotos);
+  const report=buildMonthReport(monthIndex);
   if(hasPhotos){
     try{
       const file=await buildPhotosOnlyImage(monthIndex);
-      if(file&&navigator.share){
-        const shareData={text:report,files:[file]};
+      if(navigator.share){
         try{
-          if(!navigator.canShare||navigator.canShare(shareData)){
-            await navigator.share(shareData);
-            showToast('Compartilhado! Escolha o WhatsApp.');
-            return;
+          await navigator.share({text:report});
+          if(file){
+            showToast('Texto enviado! Agora envie as fotos...');
+            await new Promise(r=>setTimeout(r,600));
+            await navigator.share({files:[file]});
+            showToast('Pronto! Avaliação completa enviada.');
           }
+          return;
         }catch(e){if(e.name==='AbortError')return;}
       }
       if(file){
         window.open(`https://wa.me/5573991040064?text=${encodeURIComponent(report)}`,'_blank');
         downloadPhotoComposite(file);
-        setTimeout(()=>showToast('WhatsApp aberto! Anexe a imagem das fotos após "Minhas fotos".'),400);
+        setTimeout(()=>showToast('Envie o texto, depois a imagem baixada como nova mensagem.'),400);
         return;
       }
     }catch(e){console.warn('Erro ao montar fotos:',e);}
