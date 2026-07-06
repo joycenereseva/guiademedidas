@@ -606,25 +606,164 @@ function buildPhotoGrid(){
   grid.innerHTML=html;
 }
 
-// CORREÇÃO 3 — Função compartilhar WhatsApp com medidas do mês
-function shareMonthWhatsApp(monthIndex){
+// CORREÇÃO 3 — Função compartilhar WhatsApp com medidas + fotos do mês
+function buildMonthReport(monthIndex){
   const name=localStorage.getItem('joyce_name')||'Aluna';
   const date=localStorage.getItem(`date-m${monthIndex}`)||'';
-  let report=`📊 *AVALIAÇÃO — MÊS ${monthIndex}*\n👤 ${name}\n👩‍🏫 Profª Joyce Neres\n${date?'📅 '+date+'\n':''}\n`;
-  const groups={};let hasData=false;
+  const photoDate=localStorage.getItem(`photo-date-m${monthIndex}`)||'';
+  let report=`📊 *AVALIAÇÃO — MÊS ${monthIndex}*\n👤 ${name}\n👩‍🏫 Profª Joyce Neres\n`;
+  if(date)report+=`📅 Medidas: ${date}\n`;
+  if(photoDate&&photoDate!==date)report+=`📸 Fotos: ${photoDate}\n`;
+  report+='\n';
+  const groups={};
   document.querySelectorAll('.measure-input').forEach(input=>{
     const id=input.dataset.id,parts=id.split('-'),mp=parts[parts.length-1];
     if(mp===`m${monthIndex}`){
       const label=input.dataset.label,val=input.value||'∅';
-      if(input.value)hasData=true;
       if(label.includes('Esq')||label.includes('Dir')){const base=label.replace(' Esq','').replace(' Dir','');if(!groups[base])groups[base]={e:'∅',d:'∅'};if(label.includes('Esq'))groups[base].e=val;else groups[base].d=val;}
-      else report+=`*${label}:* ${val}\n`;
+      else if(input.value)report+=`*${label}:* ${val}\n`;
     }
   });
-  for(const[name2,measures]of Object.entries(groups))report+=`*${name2}:* ${measures.e} | ${measures.d}\n`;
+  for(const[name2,measures]of Object.entries(groups)){
+    if(measures.e!=='∅'||measures.d!=='∅')report+=`*${name2}:* ${measures.e} | ${measures.d}\n`;
+  }
+  const photoKeys=['front','left','back','right'];
+  const photoCount=photoKeys.filter(k=>localStorage.getItem(`photo-${k}-m${monthIndex}`)).length;
+  if(photoCount)report+=`\n📸 *${photoCount} foto(s) evolutiva(s) anexada(s)*\n`;
   report+=`\nTe aguardo no próximo mês, vamos juntas! 💚\n@joyceneresef`;
-  if(!hasData){showToast(`Nenhum dado preenchido no Mês ${monthIndex}.`);return;}
+  return report;
+}
+
+function monthHasMeasureData(monthIndex){
+  let has=false;
+  document.querySelectorAll('.measure-input').forEach(input=>{
+    const id=input.dataset.id,mp=id.split('-').pop();
+    if(mp===`m${monthIndex}`&&input.value)has=true;
+  });
+  return has;
+}
+
+function monthHasPhotos(monthIndex){
+  return['front','left','back','right'].some(k=>localStorage.getItem(`photo-${k}-m${monthIndex}`));
+}
+
+function loadImage(src){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=reject;
+    img.src=src;
+  });
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  if(ctx.roundRect){ctx.beginPath();ctx.roundRect(x,y,w,h,r);return;}
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+async function buildPhotoComposite(monthIndex){
+  const keys=['front','left','back','right'];
+  const labels=['FRENTE','ESQ','COSTAS','DIR'];
+  if(!monthHasPhotos(monthIndex))return null;
+  const slotW=220,slotH=293,gap=14,pad=24,labelH=32,headerH=56;
+  const cols=4;
+  const W=pad*2+cols*slotW+(cols-1)*gap;
+  const H=pad+headerH+slotH+labelH+pad;
+  const canvas=document.createElement('canvas');
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#18181B';
+  ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#4A7C62';
+  ctx.lineWidth=4;
+  roundRect(ctx,2,2,W-4,H-4,12);
+  ctx.stroke();
+  const name=localStorage.getItem('joyce_name')||'Aluna';
+  const date=localStorage.getItem(`photo-date-m${monthIndex}`)||localStorage.getItem(`date-m${monthIndex}`)||'';
+  ctx.fillStyle='#F0EDE6';
+  ctx.font='bold 20px Montserrat, Arial, sans-serif';
+  ctx.fillText(`MÊS ${monthIndex}${date?' — '+date:''}`,pad,pad+24);
+  ctx.fillStyle='#8aba9e';
+  ctx.font='600 14px Montserrat, Arial, sans-serif';
+  ctx.fillText(name,pad,pad+46);
+  for(let i=0;i<cols;i++){
+    const x=pad+i*(slotW+gap),y=pad+headerH;
+    const data=localStorage.getItem(`photo-${keys[i]}-m${monthIndex}`);
+    ctx.fillStyle='#111';
+    roundRect(ctx,x,y,slotW,slotH,10);
+    ctx.fill();
+    if(data){
+      try{
+        const img=await loadImage(data);
+        const scale=Math.max(slotW/img.width,slotH/img.height);
+        const sw=slotW/scale,sh=slotH/scale;
+        const sx=(img.width-sw)/2,sy=(img.height-sh)/2;
+        ctx.save();
+        roundRect(ctx,x,y,slotW,slotH,10);
+        ctx.clip();
+        ctx.drawImage(img,sx,sy,sw,sh,x,y,slotW,slotH);
+        ctx.restore();
+      }catch(e){}
+    }else{
+      ctx.fillStyle='rgba(255,255,255,.25)';
+      ctx.font='bold 11px Montserrat, Arial, sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText(labels[i],x+slotW/2,y+slotH/2+4);
+      ctx.textAlign='left';
+    }
+    ctx.fillStyle='rgba(255,255,255,.45)';
+    ctx.font='bold 10px Montserrat, Arial, sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText(labels[i],x+slotW/2,y+slotH+22);
+    ctx.textAlign='left';
+  }
+  return new Promise(resolve=>{
+    canvas.toBlob(blob=>{
+      resolve(blob?new File([blob],`fotos-mes-${monthIndex}.jpg`,{type:'image/jpeg'}):null);
+    },'image/jpeg',.88);
+  });
+}
+
+function downloadPhotoComposite(file){
+  const url=URL.createObjectURL(file);
+  const a=document.createElement('a');
+  a.href=url;a.download=file.name;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+async function shareMonthWhatsApp(monthIndex){
+  const hasData=monthHasMeasureData(monthIndex);
+  const hasPhotos=monthHasPhotos(monthIndex);
+  if(!hasData&&!hasPhotos){showToast(`Nenhum dado ou foto no Mês ${monthIndex}.`);return;}
+  const report=buildMonthReport(monthIndex);
+  showToast('Preparando envio...');
+  let photoFile=null;
+  if(hasPhotos){
+    try{photoFile=await buildPhotoComposite(monthIndex);}catch(e){console.warn('Erro ao montar fotos:',e);}
+  }
+  if(photoFile&&navigator.share){
+    const shareData={text:report,files:[photoFile]};
+    try{
+      if(!navigator.canShare||navigator.canShare(shareData)){
+        await navigator.share(shareData);
+        showToast('Compartilhado! Escolha o WhatsApp na lista.');
+        return;
+      }
+    }catch(e){
+      if(e.name==='AbortError')return;
+    }
+  }
   window.open(`https://wa.me/5573991040064?text=${encodeURIComponent(report)}`,'_blank');
+  if(photoFile){
+    downloadPhotoComposite(photoFile);
+    setTimeout(()=>showToast('WhatsApp aberto! A imagem das fotos foi baixada — anexe no chat.'),400);
+  }
 }
 
 function copyMonthData(monthIndex){
