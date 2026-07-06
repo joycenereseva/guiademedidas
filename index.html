@@ -623,28 +623,34 @@ function getMeasurePair(monthIndex,base){
   return `${l||'∅'} | ${r||'∅'}`;
 }
 
-function buildMonthReport(monthIndex,includeClosing=true){
+function getMonthMeasureLines(monthIndex){
+  const lines=[];
+  const add=(label,val)=>{if(val)lines.push({label,val});};
+  const addPair=(label,pair)=>{if(pair)lines.push({label,val:pair});};
+  add('Peso',getMeasureVal(monthIndex,`peso-m${monthIndex}`));
+  addPair('Antebraço',getMeasurePair(monthIndex,'ant'));
+  addPair('Braço Relaxado',getMeasurePair(monthIndex,'brlx'));
+  addPair('Braço Contraído',getMeasurePair(monthIndex,'bcon'));
+  add('Ombro',getMeasureVal(monthIndex,`omb-m${monthIndex}`));
+  add('Tórax',getMeasureVal(monthIndex,`tor-m${monthIndex}`));
+  add('Cintura',getMeasureVal(monthIndex,`cin-m${monthIndex}`));
+  add('Abdômen',getMeasureVal(monthIndex,`abd-m${monthIndex}`));
+  add('Quadril',getMeasureVal(monthIndex,`qua-m${monthIndex}`));
+  addPair('Coxa',getMeasurePair(monthIndex,'cox'));
+  addPair('Panturrilha',getMeasurePair(monthIndex,'pan'));
+  return lines;
+}
+
+function buildMonthReport(monthIndex){
   const name=localStorage.getItem('joyce_name')||'Aluna';
   const date=localStorage.getItem(`date-m${monthIndex}`)||'';
   const photoDate=localStorage.getItem(`photo-date-m${monthIndex}`)||'';
-  let report=`📊 *AVALIAÇÃO — MÊS ${monthIndex}*\n👤 ${name}\n👩‍🏫 Profª Joyce Neres\n`;
+  let report=`📊 *AVALIAÇÃO — MÊS ${monthIndex}*\n👩‍🏫 Profª Joyce Neres\n👤 ${name}\n`;
   if(date)report+=`📅 Medidas: ${date}\n`;
   if(photoDate&&photoDate!==date)report+=`📸 Fotos: ${photoDate}\n`;
   report+='\n';
-  const peso=getMeasureVal(monthIndex,`peso-m${monthIndex}`);
-  if(peso)report+=`*Peso:* ${peso}\n`;
-  const ant=getMeasurePair(monthIndex,'ant');if(ant)report+=`*Antebraço:* ${ant}\n`;
-  const brlx=getMeasurePair(monthIndex,'brlx');if(brlx)report+=`*Braço Relaxado:* ${brlx}\n`;
-  const bcon=getMeasurePair(monthIndex,'bcon');if(bcon)report+=`*Braço Contraído:* ${bcon}\n`;
-  const omb=getMeasureVal(monthIndex,`omb-m${monthIndex}`);if(omb)report+=`*Ombro:* ${omb}\n`;
-  const tor=getMeasureVal(monthIndex,`tor-m${monthIndex}`);if(tor)report+=`*Tórax:* ${tor}\n`;
-  const cin=getMeasureVal(monthIndex,`cin-m${monthIndex}`);if(cin)report+=`*Cintura:* ${cin}\n`;
-  const abd=getMeasureVal(monthIndex,`abd-m${monthIndex}`);if(abd)report+=`*Abdômen:* ${abd}\n`;
-  const qua=getMeasureVal(monthIndex,`qua-m${monthIndex}`);if(qua)report+=`*Quadril:* ${qua}\n`;
-  const cox=getMeasurePair(monthIndex,'cox');if(cox)report+=`*Coxa:* ${cox}\n`;
-  const pan=getMeasurePair(monthIndex,'pan');if(pan)report+=`*Panturrilha:* ${pan}\n`;
-  if(monthHasPhotos(monthIndex))report+=`\n*Minhas fotos*\n`;
-  if(includeClosing)report+=buildClosingLine();
+  getMonthMeasureLines(monthIndex).forEach(({label,val})=>{report+=`*${label}:* ${val}\n`;});
+  report+=buildClosingLine();
   return report;
 }
 
@@ -680,36 +686,54 @@ function roundRect(ctx,x,y,w,h,r){
   ctx.closePath();
 }
 
-async function buildPhotoComposite(monthIndex){
+async function buildFullWhatsAppImage(monthIndex){
   const keys=['front','left','back','right'];
   const labels=['FRENTE','ESQ','COSTAS','DIR'];
-  if(!monthHasPhotos(monthIndex))return null;
-  const slotW=220,slotH=293,gap=14,pad=24,labelH=32,headerH=56,footerH=72;
-  const cols=4;
-  const W=pad*2+cols*slotW+(cols-1)*gap;
-  const H=pad+headerH+slotH+labelH+footerH+pad;
+  const name=localStorage.getItem('joyce_name')||'Aluna';
+  const date=localStorage.getItem(`date-m${monthIndex}`)||'';
+  const photoDate=localStorage.getItem(`photo-date-m${monthIndex}`)||'';
+  const measureLines=getMonthMeasureLines(monthIndex);
+  const W=1000,pad=48,lineH=34;
+  const slotW=200,slotH=267,gap=12,cols=4;
+  const gridW=cols*slotW+(cols-1)*gap;
+  const gridX=(W-gridW)/2;
+  const headerH=date||photoDate?200:170;
+  const measuresH=Math.max(measureLines.length,1)*lineH+24;
+  const photosTitleH=52;
+  const gridSectionH=slotH+36;
+  const footerH=88;
+  const H=pad+headerH+measuresH+photosTitleH+gridSectionH+footerH+pad;
   const canvas=document.createElement('canvas');
   canvas.width=W;canvas.height=H;
   const ctx=canvas.getContext('2d');
-  ctx.fillStyle='#18181B';
+  ctx.fillStyle='#FFFFFF';
   ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle='#4A7C62';
-  ctx.lineWidth=4;
-  roundRect(ctx,2,2,W-4,H-4,12);
-  ctx.stroke();
-  const name=localStorage.getItem('joyce_name')||'Aluna';
-  const date=localStorage.getItem(`photo-date-m${monthIndex}`)||localStorage.getItem(`date-m${monthIndex}`)||'';
-  ctx.fillStyle='#F0EDE6';
-  ctx.font='bold 20px Montserrat, Arial, sans-serif';
-  ctx.fillText(`MÊS ${monthIndex}${date?' — '+date:''}`,pad,pad+24);
-  ctx.fillStyle='#8aba9e';
-  ctx.font='600 14px Montserrat, Arial, sans-serif';
-  ctx.fillText(name,pad,pad+46);
+  let y=pad;
+  ctx.fillStyle='#1A1A1A';
+  ctx.font='bold 30px Montserrat, Arial, sans-serif';
+  ctx.fillText(`📊 AVALIAÇÃO — MÊS ${monthIndex}`,pad,y+30);y+=46;
+  ctx.font='600 22px Montserrat, Arial, sans-serif';
+  ctx.fillStyle='#4A7C62';
+  ctx.fillText('👩‍🏫 Profª Joyce Neres',pad,y+22);y+=34;
+  ctx.fillStyle='#374151';
+  ctx.fillText(`👤 ${name}`,pad,y+22);y+=34;
+  ctx.font='16px Montserrat, Arial, sans-serif';
+  ctx.fillStyle='#666666';
+  if(date){ctx.fillText(`📅 Medidas: ${date}`,pad,y+18);y+=28;}
+  if(photoDate&&photoDate!==date){ctx.fillText(`📸 Fotos: ${photoDate}`,pad,y+18);y+=28;}
+  y+=18;
+  ctx.font='600 18px Montserrat, Arial, sans-serif';
+  ctx.fillStyle='#1A1A1A';
+  measureLines.forEach(({label,val})=>{ctx.fillText(`${label}: ${val}`,pad,y+18);y+=lineH;});
+  y+=20;
+  ctx.font='bold 24px Montserrat, Arial, sans-serif';
+  ctx.fillText('Minhas fotos',pad,y+24);y+=44;
+  const gridY=y;
   for(let i=0;i<cols;i++){
-    const x=pad+i*(slotW+gap),y=pad+headerH;
+    const x=gridX+i*(slotW+gap);
     const data=localStorage.getItem(`photo-${keys[i]}-m${monthIndex}`);
-    ctx.fillStyle='#111';
-    roundRect(ctx,x,y,slotW,slotH,10);
+    ctx.fillStyle='#111111';
+    roundRect(ctx,x,gridY,slotW,slotH,10);
     ctx.fill();
     if(data){
       try{
@@ -718,37 +742,37 @@ async function buildPhotoComposite(monthIndex){
         const sw=slotW/scale,sh=slotH/scale;
         const sx=(img.width-sw)/2,sy=(img.height-sh)/2;
         ctx.save();
-        roundRect(ctx,x,y,slotW,slotH,10);
+        roundRect(ctx,x,gridY,slotW,slotH,10);
         ctx.clip();
-        ctx.drawImage(img,sx,sy,sw,sh,x,y,slotW,slotH);
+        ctx.drawImage(img,sx,sy,sw,sh,x,gridY,slotW,slotH);
         ctx.restore();
       }catch(e){}
     }else{
       ctx.fillStyle='rgba(255,255,255,.25)';
       ctx.font='bold 11px Montserrat, Arial, sans-serif';
       ctx.textAlign='center';
-      ctx.fillText(labels[i],x+slotW/2,y+slotH/2+4);
+      ctx.fillText(labels[i],x+slotW/2,gridY+slotH/2+4);
       ctx.textAlign='left';
     }
-    ctx.fillStyle='rgba(255,255,255,.45)';
+    ctx.fillStyle='#888888';
     ctx.font='bold 10px Montserrat, Arial, sans-serif';
     ctx.textAlign='center';
-    ctx.fillText(labels[i],x+slotW/2,y+slotH+22);
+    ctx.fillText(labels[i],x+slotW/2,gridY+slotH+20);
     ctx.textAlign='left';
   }
-  const footerY=pad+headerH+slotH+labelH+8;
-  ctx.fillStyle='#F0EDE6';
-  ctx.font='600 15px Montserrat, Arial, sans-serif';
+  y=gridY+gridSectionH+16;
   ctx.textAlign='center';
-  ctx.fillText('Te aguardo no próximo mês, vamos juntas ! 💚',W/2,footerY+22);
-  ctx.fillStyle='#8aba9e';
-  ctx.font='600 13px Montserrat, Arial, sans-serif';
-  ctx.fillText('@joyceneresef',W/2,footerY+46);
+  ctx.fillStyle='#1A1A1A';
+  ctx.font='600 20px Montserrat, Arial, sans-serif';
+  ctx.fillText('Te aguardo no próximo mês, vamos juntas ! 💚',W/2,y+20);
+  ctx.fillStyle='#4A7C62';
+  ctx.font='600 16px Montserrat, Arial, sans-serif';
+  ctx.fillText('@joyceneresef',W/2,y+48);
   ctx.textAlign='left';
   return new Promise(resolve=>{
     canvas.toBlob(blob=>{
-      resolve(blob?new File([blob],`fotos-mes-${monthIndex}.jpg`,{type:'image/jpeg'}):null);
-    },'image/jpeg',.88);
+      resolve(blob?new File([blob],`avaliacao-mes-${monthIndex}.jpg`,{type:'image/jpeg'}):null);
+    },'image/jpeg',.9);
   });
 }
 
@@ -764,29 +788,30 @@ async function shareMonthWhatsApp(monthIndex){
   const hasData=monthHasMeasureData(monthIndex);
   const hasPhotos=monthHasPhotos(monthIndex);
   if(!hasData&&!hasPhotos){showToast(`Nenhum dado ou foto no Mês ${monthIndex}.`);return;}
-  const report=buildMonthReport(monthIndex,!hasPhotos);
   showToast('Preparando envio...');
-  let photoFile=null;
   if(hasPhotos){
-    try{photoFile=await buildPhotoComposite(monthIndex);}catch(e){console.warn('Erro ao montar fotos:',e);}
-  }
-  if(photoFile&&navigator.share){
-    const shareData={text:report,files:[photoFile]};
     try{
-      if(!navigator.canShare||navigator.canShare(shareData)){
-        await navigator.share(shareData);
-        showToast('Compartilhado! Escolha o WhatsApp na lista.');
+      const file=await buildFullWhatsAppImage(monthIndex);
+      if(file&&navigator.share){
+        const shareData={files:[file]};
+        try{
+          if(!navigator.canShare||navigator.canShare(shareData)){
+            await navigator.share(shareData);
+            showToast('Compartilhado! Escolha o WhatsApp.');
+            return;
+          }
+        }catch(e){if(e.name==='AbortError')return;}
+      }
+      if(file){
+        downloadPhotoComposite(file);
+        window.open('https://wa.me/5573991040064','_blank');
+        setTimeout(()=>showToast('Anexe a imagem baixada no WhatsApp.'),400);
         return;
       }
-    }catch(e){
-      if(e.name==='AbortError')return;
-    }
+    }catch(e){console.warn('Erro ao montar avaliação:',e);}
   }
+  const report=buildMonthReport(monthIndex);
   window.open(`https://wa.me/5573991040064?text=${encodeURIComponent(report)}`,'_blank');
-  if(photoFile){
-    downloadPhotoComposite(photoFile);
-    setTimeout(()=>showToast('WhatsApp aberto! A imagem das fotos foi baixada — anexe no chat.'),400);
-  }
 }
 
 function copyMonthData(monthIndex){
