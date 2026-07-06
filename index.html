@@ -628,20 +628,20 @@ function getMonthMeasureLines(monthIndex){
   const add=(label,val)=>{if(val)lines.push({label,val});};
   const addPair=(label,pair)=>{if(pair)lines.push({label,val:pair});};
   add('Peso',getMeasureVal(monthIndex,`peso-m${monthIndex}`));
-  addPair('Antebraço',getMeasurePair(monthIndex,'ant'));
-  addPair('Braço Relaxado',getMeasurePair(monthIndex,'brlx'));
-  addPair('Braço Contraído',getMeasurePair(monthIndex,'bcon'));
   add('Ombro',getMeasureVal(monthIndex,`omb-m${monthIndex}`));
   add('Tórax',getMeasureVal(monthIndex,`tor-m${monthIndex}`));
   add('Cintura',getMeasureVal(monthIndex,`cin-m${monthIndex}`));
   add('Abdômen',getMeasureVal(monthIndex,`abd-m${monthIndex}`));
   add('Quadril',getMeasureVal(monthIndex,`qua-m${monthIndex}`));
+  addPair('Antebraço',getMeasurePair(monthIndex,'ant'));
+  addPair('Braço Relaxado',getMeasurePair(monthIndex,'brlx'));
+  addPair('Braço Contraído',getMeasurePair(monthIndex,'bcon'));
   addPair('Coxa',getMeasurePair(monthIndex,'cox'));
   addPair('Panturrilha',getMeasurePair(monthIndex,'pan'));
   return lines;
 }
 
-function buildMonthReport(monthIndex){
+function buildMonthReport(monthIndex,withPhotos=false){
   const name=localStorage.getItem('joyce_name')||'Aluna';
   const date=localStorage.getItem(`date-m${monthIndex}`)||'';
   const photoDate=localStorage.getItem(`photo-date-m${monthIndex}`)||'';
@@ -650,6 +650,7 @@ function buildMonthReport(monthIndex){
   if(photoDate&&photoDate!==date)report+=`📸 Fotos: ${photoDate}\n`;
   report+='\n';
   getMonthMeasureLines(monthIndex).forEach(({label,val})=>{report+=`*${label}:* ${val}\n`;});
+  if(withPhotos)report+=`\n*Minhas fotos*\n`;
   report+=buildClosingLine();
   return report;
 }
@@ -686,51 +687,25 @@ function roundRect(ctx,x,y,w,h,r){
   ctx.closePath();
 }
 
-async function buildFullWhatsAppImage(monthIndex){
+async function buildPhotosOnlyImage(monthIndex){
   const keys=['front','left','back','right'];
   const labels=['FRENTE','ESQ','COSTAS','DIR'];
-  const name=localStorage.getItem('joyce_name')||'Aluna';
-  const date=localStorage.getItem(`date-m${monthIndex}`)||'';
-  const photoDate=localStorage.getItem(`photo-date-m${monthIndex}`)||'';
-  const measureLines=getMonthMeasureLines(monthIndex);
-  const W=1000,pad=48,lineH=34;
-  const slotW=200,slotH=267,gap=12,cols=4;
-  const gridW=cols*slotW+(cols-1)*gap;
-  const gridX=(W-gridW)/2;
-  const headerH=date||photoDate?200:170;
-  const measuresH=Math.max(measureLines.length,1)*lineH+24;
-  const photosTitleH=52;
-  const gridSectionH=slotH+36;
-  const footerH=88;
-  const H=pad+headerH+measuresH+photosTitleH+gridSectionH+footerH+pad;
+  const slotW=220,slotH=293,gap=14,pad=24,labelH=28;
+  const cols=4;
+  const W=pad*2+cols*slotW+(cols-1)*gap;
+  const H=pad+slotH+labelH+pad;
   const canvas=document.createElement('canvas');
   canvas.width=W;canvas.height=H;
   const ctx=canvas.getContext('2d');
-  ctx.fillStyle='#FFFFFF';
+  ctx.fillStyle='#18181B';
   ctx.fillRect(0,0,W,H);
-  let y=pad;
-  ctx.fillStyle='#1A1A1A';
-  ctx.font='bold 30px Montserrat, Arial, sans-serif';
-  ctx.fillText(`📊 AVALIAÇÃO — MÊS ${monthIndex}`,pad,y+30);y+=46;
-  ctx.font='600 22px Montserrat, Arial, sans-serif';
-  ctx.fillStyle='#4A7C62';
-  ctx.fillText('👩‍🏫 Profª Joyce Neres',pad,y+22);y+=34;
-  ctx.fillStyle='#374151';
-  ctx.fillText(`👤 ${name}`,pad,y+22);y+=34;
-  ctx.font='16px Montserrat, Arial, sans-serif';
-  ctx.fillStyle='#666666';
-  if(date){ctx.fillText(`📅 Medidas: ${date}`,pad,y+18);y+=28;}
-  if(photoDate&&photoDate!==date){ctx.fillText(`📸 Fotos: ${photoDate}`,pad,y+18);y+=28;}
-  y+=18;
-  ctx.font='600 18px Montserrat, Arial, sans-serif';
-  ctx.fillStyle='#1A1A1A';
-  measureLines.forEach(({label,val})=>{ctx.fillText(`${label}: ${val}`,pad,y+18);y+=lineH;});
-  y+=20;
-  ctx.font='bold 24px Montserrat, Arial, sans-serif';
-  ctx.fillText('Minhas fotos',pad,y+24);y+=44;
-  const gridY=y;
+  ctx.strokeStyle='#4A7C62';
+  ctx.lineWidth=4;
+  roundRect(ctx,2,2,W-4,H-4,12);
+  ctx.stroke();
+  const gridY=pad;
   for(let i=0;i<cols;i++){
-    const x=gridX+i*(slotW+gap);
+    const x=pad+i*(slotW+gap);
     const data=localStorage.getItem(`photo-${keys[i]}-m${monthIndex}`);
     ctx.fillStyle='#111111';
     roundRect(ctx,x,gridY,slotW,slotH,10);
@@ -754,24 +729,15 @@ async function buildFullWhatsAppImage(monthIndex){
       ctx.fillText(labels[i],x+slotW/2,gridY+slotH/2+4);
       ctx.textAlign='left';
     }
-    ctx.fillStyle='#888888';
+    ctx.fillStyle='rgba(255,255,255,.45)';
     ctx.font='bold 10px Montserrat, Arial, sans-serif';
     ctx.textAlign='center';
     ctx.fillText(labels[i],x+slotW/2,gridY+slotH+20);
     ctx.textAlign='left';
   }
-  y=gridY+gridSectionH+16;
-  ctx.textAlign='center';
-  ctx.fillStyle='#1A1A1A';
-  ctx.font='600 20px Montserrat, Arial, sans-serif';
-  ctx.fillText('Te aguardo no próximo mês, vamos juntas ! 💚',W/2,y+20);
-  ctx.fillStyle='#4A7C62';
-  ctx.font='600 16px Montserrat, Arial, sans-serif';
-  ctx.fillText('@joyceneresef',W/2,y+48);
-  ctx.textAlign='left';
   return new Promise(resolve=>{
     canvas.toBlob(blob=>{
-      resolve(blob?new File([blob],`avaliacao-mes-${monthIndex}.jpg`,{type:'image/jpeg'}):null);
+      resolve(blob?new File([blob],`fotos-mes-${monthIndex}.jpg`,{type:'image/jpeg'}):null);
     },'image/jpeg',.9);
   });
 }
@@ -789,11 +755,12 @@ async function shareMonthWhatsApp(monthIndex){
   const hasPhotos=monthHasPhotos(monthIndex);
   if(!hasData&&!hasPhotos){showToast(`Nenhum dado ou foto no Mês ${monthIndex}.`);return;}
   showToast('Preparando envio...');
+  const report=buildMonthReport(monthIndex,hasPhotos);
   if(hasPhotos){
     try{
-      const file=await buildFullWhatsAppImage(monthIndex);
+      const file=await buildPhotosOnlyImage(monthIndex);
       if(file&&navigator.share){
-        const shareData={files:[file]};
+        const shareData={text:report,files:[file]};
         try{
           if(!navigator.canShare||navigator.canShare(shareData)){
             await navigator.share(shareData);
@@ -803,14 +770,13 @@ async function shareMonthWhatsApp(monthIndex){
         }catch(e){if(e.name==='AbortError')return;}
       }
       if(file){
+        window.open(`https://wa.me/5573991040064?text=${encodeURIComponent(report)}`,'_blank');
         downloadPhotoComposite(file);
-        window.open('https://wa.me/5573991040064','_blank');
-        setTimeout(()=>showToast('Anexe a imagem baixada no WhatsApp.'),400);
+        setTimeout(()=>showToast('WhatsApp aberto! Anexe a imagem das fotos após "Minhas fotos".'),400);
         return;
       }
-    }catch(e){console.warn('Erro ao montar avaliação:',e);}
+    }catch(e){console.warn('Erro ao montar fotos:',e);}
   }
-  const report=buildMonthReport(monthIndex);
   window.open(`https://wa.me/5573991040064?text=${encodeURIComponent(report)}`,'_blank');
 }
 
