@@ -78,10 +78,10 @@ header{position:static!important;height:auto!important;padding:15px 0!important;
     <div class="mb-4"><span class="font-black text-4xl" style="font-family:'Playfair Display',serif;font-style:italic;color:var(--preto)">JN</span></div>
     <h2 class="text-xl font-black mb-2" style="color:var(--preto)">Área exclusiva para alunas</h2>
     <p class="text-gray-500 text-sm mb-6 leading-relaxed">Digite o código de acesso que a Profª Joyce enviou para você.</p>
-    <input type="text" id="access-code-input" placeholder="Seu código de acesso" maxlength="80" autocomplete="off" class="w-full text-center font-bold px-5 py-4 rounded-xl border-2 outline-none transition mb-4" style="border-color:#e5e7eb;" onfocus="this.style.borderColor='var(--verde)'" onblur="this.style.borderColor='#e5e7eb'">
+    <input type="text" id="access-code-input" placeholder="Ex: aluna01" maxlength="80" autocomplete="off" class="w-full text-center font-bold px-5 py-4 rounded-xl border-2 outline-none transition mb-4" style="border-color:#e5e7eb;" onfocus="this.style.borderColor='var(--verde)'" onblur="this.style.borderColor='#e5e7eb'">
     <button id="access-submit-btn" onclick="verifyAccess()" class="w-full py-4 rounded-xl font-black text-white transition shadow-lg" style="background:var(--verde)">ENTRAR</button>
     <p id="access-error" class="text-red-500 text-xs mt-4 hidden font-semibold">Código inválido ou acesso não autorizado.</p>
-    <p class="text-gray-400 text-xs mt-6 leading-relaxed">Não tem código? Entre em contato com a Profª Joyce pelo Instagram.</p>
+    <p class="text-gray-400 text-xs mt-6 leading-relaxed">Não tem código? Entre em contato com a Profª Joyce pelo <a href="https://wa.me/5573991040064" target="_blank" class="font-bold underline" style="color:var(--verde)">WhatsApp</a>.</p>
   </div>
 </div>
 
@@ -361,7 +361,7 @@ const ACCESS_ENABLED = true; // false = desativa o bloqueio temporariamente
 
 let allowedCodes = [];
 
-function normalizeCode(c){return (c||'').trim().toLowerCase();}
+function normalizeCode(c){return (c||'').trim().toLowerCase().replace(/[\s\-_]+/g,'');}
 
 async function loadAllowedCodes(){
   if(!ACCESS_ENABLED)return ['__demo__'];
