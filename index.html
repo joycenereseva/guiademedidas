@@ -607,7 +607,23 @@ function buildPhotoGrid(){
 }
 
 // CORREÇÃO 3 — Função compartilhar WhatsApp com medidas + fotos do mês
-function buildMonthReport(monthIndex){
+function buildClosingLine(){
+  return `\nTe aguardo no próximo mês, vamos juntas ! 💚\n@joyceneresef`;
+}
+
+function getMeasureVal(monthIndex,id){
+  const inp=document.querySelector(`[data-id="${id}"]`);
+  return inp&&inp.value?inp.value:null;
+}
+
+function getMeasurePair(monthIndex,base){
+  const l=getMeasureVal(monthIndex,`${base}-l-m${monthIndex}`);
+  const r=getMeasureVal(monthIndex,`${base}-r-m${monthIndex}`);
+  if(!l&&!r)return null;
+  return `${l||'∅'} | ${r||'∅'}`;
+}
+
+function buildMonthReport(monthIndex,includeClosing=true){
   const name=localStorage.getItem('joyce_name')||'Aluna';
   const date=localStorage.getItem(`date-m${monthIndex}`)||'';
   const photoDate=localStorage.getItem(`photo-date-m${monthIndex}`)||'';
@@ -615,22 +631,20 @@ function buildMonthReport(monthIndex){
   if(date)report+=`📅 Medidas: ${date}\n`;
   if(photoDate&&photoDate!==date)report+=`📸 Fotos: ${photoDate}\n`;
   report+='\n';
-  const groups={};
-  document.querySelectorAll('.measure-input').forEach(input=>{
-    const id=input.dataset.id,parts=id.split('-'),mp=parts[parts.length-1];
-    if(mp===`m${monthIndex}`){
-      const label=input.dataset.label,val=input.value||'∅';
-      if(label.includes('Esq')||label.includes('Dir')){const base=label.replace(' Esq','').replace(' Dir','');if(!groups[base])groups[base]={e:'∅',d:'∅'};if(label.includes('Esq'))groups[base].e=val;else groups[base].d=val;}
-      else if(input.value)report+=`*${label}:* ${val}\n`;
-    }
-  });
-  for(const[name2,measures]of Object.entries(groups)){
-    if(measures.e!=='∅'||measures.d!=='∅')report+=`*${name2}:* ${measures.e} | ${measures.d}\n`;
-  }
-  const photoKeys=['front','left','back','right'];
-  const photoCount=photoKeys.filter(k=>localStorage.getItem(`photo-${k}-m${monthIndex}`)).length;
-  if(photoCount)report+=`\n📸 *${photoCount} foto(s) evolutiva(s) anexada(s)*\n`;
-  report+=`\nTe aguardo no próximo mês, vamos juntas! 💚\n@joyceneresef`;
+  const peso=getMeasureVal(monthIndex,`peso-m${monthIndex}`);
+  if(peso)report+=`*Peso:* ${peso}\n`;
+  const ant=getMeasurePair(monthIndex,'ant');if(ant)report+=`*Antebraço:* ${ant}\n`;
+  const brlx=getMeasurePair(monthIndex,'brlx');if(brlx)report+=`*Braço Relaxado:* ${brlx}\n`;
+  const bcon=getMeasurePair(monthIndex,'bcon');if(bcon)report+=`*Braço Contraído:* ${bcon}\n`;
+  const omb=getMeasureVal(monthIndex,`omb-m${monthIndex}`);if(omb)report+=`*Ombro:* ${omb}\n`;
+  const tor=getMeasureVal(monthIndex,`tor-m${monthIndex}`);if(tor)report+=`*Tórax:* ${tor}\n`;
+  const cin=getMeasureVal(monthIndex,`cin-m${monthIndex}`);if(cin)report+=`*Cintura:* ${cin}\n`;
+  const abd=getMeasureVal(monthIndex,`abd-m${monthIndex}`);if(abd)report+=`*Abdômen:* ${abd}\n`;
+  const qua=getMeasureVal(monthIndex,`qua-m${monthIndex}`);if(qua)report+=`*Quadril:* ${qua}\n`;
+  const cox=getMeasurePair(monthIndex,'cox');if(cox)report+=`*Coxa:* ${cox}\n`;
+  const pan=getMeasurePair(monthIndex,'pan');if(pan)report+=`*Panturrilha:* ${pan}\n`;
+  if(monthHasPhotos(monthIndex))report+=`\n*Minhas fotos*\n`;
+  if(includeClosing)report+=buildClosingLine();
   return report;
 }
 
@@ -670,10 +684,10 @@ async function buildPhotoComposite(monthIndex){
   const keys=['front','left','back','right'];
   const labels=['FRENTE','ESQ','COSTAS','DIR'];
   if(!monthHasPhotos(monthIndex))return null;
-  const slotW=220,slotH=293,gap=14,pad=24,labelH=32,headerH=56;
+  const slotW=220,slotH=293,gap=14,pad=24,labelH=32,headerH=56,footerH=72;
   const cols=4;
   const W=pad*2+cols*slotW+(cols-1)*gap;
-  const H=pad+headerH+slotH+labelH+pad;
+  const H=pad+headerH+slotH+labelH+footerH+pad;
   const canvas=document.createElement('canvas');
   canvas.width=W;canvas.height=H;
   const ctx=canvas.getContext('2d');
@@ -722,6 +736,15 @@ async function buildPhotoComposite(monthIndex){
     ctx.fillText(labels[i],x+slotW/2,y+slotH+22);
     ctx.textAlign='left';
   }
+  const footerY=pad+headerH+slotH+labelH+8;
+  ctx.fillStyle='#F0EDE6';
+  ctx.font='600 15px Montserrat, Arial, sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText('Te aguardo no próximo mês, vamos juntas ! 💚',W/2,footerY+22);
+  ctx.fillStyle='#8aba9e';
+  ctx.font='600 13px Montserrat, Arial, sans-serif';
+  ctx.fillText('@joyceneresef',W/2,footerY+46);
+  ctx.textAlign='left';
   return new Promise(resolve=>{
     canvas.toBlob(blob=>{
       resolve(blob?new File([blob],`fotos-mes-${monthIndex}.jpg`,{type:'image/jpeg'}):null);
@@ -741,7 +764,7 @@ async function shareMonthWhatsApp(monthIndex){
   const hasData=monthHasMeasureData(monthIndex);
   const hasPhotos=monthHasPhotos(monthIndex);
   if(!hasData&&!hasPhotos){showToast(`Nenhum dado ou foto no Mês ${monthIndex}.`);return;}
-  const report=buildMonthReport(monthIndex);
+  const report=buildMonthReport(monthIndex,!hasPhotos);
   showToast('Preparando envio...');
   let photoFile=null;
   if(hasPhotos){
